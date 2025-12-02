@@ -1,60 +1,50 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Тест з ЦЗ — Симулятор</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Тест</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+<script>
+// Enable Start button when name entered
+const startInput = document.getElementById('userName');
+const startBtn = document.getElementById('startBtn');
+if(startInput && startBtn){
+startBtn.disabled = true;
+startInput.addEventListener('input', ()=>{
+startBtn.disabled = startInput.value.trim().length === 0;
+});
+}
+</script>
+</script>
 <style>
-  :root{--brand:#0ea5a4;--muted:#e5e7eb;}
-  body{font-family:system-ui, Arial, sans-serif;background:#f3f4f6;margin:0;padding:24px;}
-  .container{max-width:900px;margin:0 auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.08);}
-  h1{margin:0 0 12px;font-size:22px;}
-  .meta{display:flex;gap:12px;align-items:center;margin-bottom:12px;}
-  label{font-weight:600;}
-  input[type=text]{padding:8px;border-radius:8px;border:1px solid #ccc;width:320px;}
-  #startTest{margin-left:8px;padding:8px 14px;border-radius:8px;border:0;background:var(--brand);color:#fff;cursor:pointer;}
-  #startTest:disabled{opacity:.45;cursor:not-allowed;}
-  .timer{font-size:16px;font-weight:700;color:#b91c1c;margin-left:auto;}
-  .question{margin:18px 0;padding:16px;border-radius:8px;border:1px solid var(--muted);background:#fff;}
-  .options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
-  label.opt{padding:10px;border:1px solid #ddd;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:8px;}
-  input[type=radio]{transform:scale(1.05);}
-  .controls{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:8px;}
-  .controls .left{display:flex;gap:8px;}
-  button.secondary{background:#e5e7eb;color:#111;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;}
-  button.primary{background:var(--brand);color:#fff;padding:8px 12px;border-radius:8px;border:0;cursor:pointer;}
-  button[disabled]{opacity:.45;cursor:not-allowed;}
-  .result{padding:14px;border-radius:8px;border:1px solid var(--muted);background:#fafafa;}
-  pre{white-space:pre-wrap;word-break:break-word;}
-  .small{font-size:13px;color:#444}
+body { font-family: Arial, sans-serif; padding: 20px; }
+.hidden { display:none; }
+button { padding:10px 20px; font-size:16px; }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>Тест з Цивільного Захисту — Симулятор</h1>
+<h2>Тест</h2>
+<label>ПІБ:</label>
+<input type="text" id="username" placeholder="Введіть ПІБ" required />
+<br><br>
+<button id="startTest" disabled>Розпочати тест</button>
 
-  <div id="loginDiv" class="meta">
-    <div>
-      <label for="username">Введіть ПІБ (обов'язково):</label><br>
-      <input id="username" type="text" placeholder="ПІБ" autocomplete="name" />
-    </div>
-    <div style="display:flex;align-items:center">
-      <button id="startTest" disabled>Розпочати тест</button>
-    </div>
-    <div class="timer" id="time" style="display:none">30:00</div>
-  </div>
 
-  <div id="testDiv" style="display:none;">
-    <p class="small">Питань: <span id="total">55</span></p>
-    <div id="app"></div>
-  </div>
+<div id="testContainer" class="hidden">
+<h3 id="qText"></h3>
+<div id="answers"></div>
+<button id="nextBtn">Далі</button>
 </div>
 
-<!-- jsPDF CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<div id="finish" class="hidden">
+<h2>Тест завершено!</h2>
+<button id="pdfBtn">Завантажити PDF результат</button>
+</div>
+
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
 
   // ---------------- ПИТАННЯ (всі 55) ----------------
   const allQuestions = [
@@ -140,199 +130,66 @@ document.addEventListener('DOMContentLoaded', () => {
   const totalEl = document.getElementById('total');
   const app = document.getElementById('app');
 
-  // Активувати кнопку при введенні ПІБ
-  usernameInput.addEventListener('input', () => {
-    startBtn.disabled = usernameInput.value.trim() === '';
-  });
+  // Активуємо кнопку старту
+const nameInput = document.getElementById('userName');
+const startBtn = document.getElementById('startBtn');
+nameInput.addEventListener('input', ()=>{
+startBtn.disabled = nameInput.value.trim().length === 0;
+});
 
-  // Глобальні функції потрібні для onclick в HTML
-  window.prev = function(){ if(state.index>0){ state.index--; render(); } };
-  window.next = function(){ if(state.index < testQuestions.length-1){ state.index++; render(); } };
-  window.finishTest = function(){ state.showResults = true; render(); };
 
-  // Старт тесту
-  startBtn.addEventListener('click', () => {
-    const username = (usernameInput.value||'').trim();
-    if(!username){ alert("Будь ласка, введіть ПІБ"); return; }
-    // готуємо повний набір питань (всі 55)
-    testQuestions = allQuestions.slice();
-    totalEl.textContent = testQuestions.length;
-    loginDiv.style.display = 'none';
-    testDiv.style.display = 'block';
-    timeEl.style.display = 'inline-block';
-    state = { index:0, choices:{}, showResults:false };
-    timeLeft = 30*60;
-    render();
-    startTimer();
-  });
+startBtn.addEventListener('click', ()=>{
+document.getElementById('testBlock').style.display='block';
+startBtn.style.display='none';
+nameInput.disabled = true;
+loadQuestion();
+});
 
-  // render
-  function render(){
-    if(state.showResults){
-      if(timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-      const score = grade();
-      const percent = Math.round(score / testQuestions.length * 100);
-      const username = (usernameInput.value||'').trim();
-      const passed = percent >= 50;
-      app.innerHTML = `
-        <div class="result">
-          <h2>${passed ? "Тест СКЛАДЕНО — ВІТАЄМО" : "ТЕСТ НЕ СКЛАДЕНО"}</h2>
-          <p>Ім'я: <strong>${escapeHtml(username)}</strong></p>
-          <p>Балів: <strong>${score}</strong> / ${testQuestions.length} (${percent}%)</p>
-          <p class="small">Нижче — перелік неправильних відповідей (якщо є).</p>
-          <div id="mistakes"></div>
-          <div style="margin-top:12px;"><button id="downloadPdf" class="primary">Завантажити PDF</button> <button id="restart" class="secondary">Пройти знову</button></div>
-        </div>
-      `;
-      // наповнимо mistakes
-      const mistakesEl = document.getElementById('mistakes');
-      const mistakes = getMistakes();
-      if(mistakes.length === 0){
-        mistakesEl.innerHTML = "<p>Усі відповіді правильні.</p>";
-      } else {
-        mistakesEl.innerHTML = mistakes.map((m,i)=>`<div style="margin-bottom:8px;"><strong>${i+1}.</strong> ${escapeHtml(m.q)}<br>
-          Ваш варіант: <strong>${escapeHtml(m.selectedLetter)}. ${escapeHtml(m.selectedText || 'не відповіли')}</strong><br>
-          Правильна: <strong>${escapeHtml(m.correctLetter)}. ${escapeHtml(m.correctText)}</strong></div>`).join('');
-      }
 
-      document.getElementById('downloadPdf').addEventListener('click', ()=> {
-        try { generatePDF(username, score, testQuestions.length, mistakes); }
-        catch(e){ console.error(e); alert('Помилка при створенні PDF. Подивіться консоль.'); }
-      });
-      document.getElementById('restart').addEventListener('click', ()=> location.reload());
-      return;
-    }
+function loadQuestion(){
+selected = null;
+const q = questions[index];
+document.getElementById('qText').innerText = q.q;
+const box = document.getElementById('answers');
+box.innerHTML = '';
+q.a.forEach((ans,i)=>{
+box.innerHTML += `<label><input type='radio' name='ans' value='${i}'> ${ans}</label><br>`;
+});
+document.querySelectorAll("input[name='ans']").forEach(el=>{
+el.addEventListener('change', ()=>{ selected = Number(el.value); });
+});
+}
 
-    // поточне питання
-    const q = testQuestions[state.index];
-    app.innerHTML = `
-      <div class="question">
-        <div><strong>Питання ${state.index+1}:</strong> ${escapeHtml(q.text)}</div>
-        <div class="options" id="opts">
-          ${Object.entries(q.options).map(([k,v])=>`<label class="opt"><input type="radio" name="q${q.id}" value="${k}" ${state.choices[q.id]===k ? 'checked' : ''}> <strong>${k}.</strong> ${escapeHtml(v)}</label>`).join('')}
-        </div>
-        <div class="controls">
-          <div class="left">
-            <button class="secondary" onclick="prev()" ${state.index===0?'disabled':''}>Назад</button>
-            <button class="secondary" onclick="next()" ${state.index===testQuestions.length-1?'disabled':''}>Далі</button>
-          </div>
-          <div>
-            <button class="primary" onclick="finishTest()">Завершити</button>
-          </div>
-        </div>
-      </div>
-      <div class="small" style="margin-top:8px">Питання ${state.index+1} з ${testQuestions.length}</div>
-    `;
 
-    // додаємо обробник для збереження вибору
-    document.querySelectorAll(`#opts input[type=radio]`).forEach(radio=>{
-      radio.addEventListener('change', (e)=>{
-        state.choices[q.id] = e.target.value;
-      });
-    });
-  }
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+if(selected===null) return;
+if(selected === questions[index].c) score++;
+index++;
+if(index < questions.length) loadQuestion();
+else finishTest();
+});
 
-  function grade(){
-    let sc = 0;
-    for(const q of testQuestions){
-      if(state.choices[q.id] === answers[q.id]) sc++;
-    }
-    return sc;
-  }
 
-  // повертає масив неправильних відповідей
-  function getMistakes(){
-    const mistakes = [];
-    for(const q of testQuestions){
-      const sel = state.choices[q.id] || null;
-      const correctLetter = answers[q.id];
-      if(sel !== correctLetter){
-        mistakes.push({
-          q: q.text,
-          selectedLetter: sel || '—',
-          selectedText: sel ? q.options[sel] : null,
-          correctLetter,
-          correctText: q.options[correctLetter]
-        });
-      }
-    }
-    return mistakes;
-  }
+function finishTest(){
+document.getElementById('testBlock').style.display='none';
+const percent = Math.round((score/questions.length)*100);
+const resultHTML = `
+<p><b>ПІБ:</b> ${nameInput.value}</p>
+<p><b>Правильних відповідей:</b> ${score} з ${questions.length}</p>
+<p><b>Результат:</b> ${percent}%</p>
+`;
 
-  // Таймер
-  function startTimer(){
-    const timerEl = timeEl;
-    if(timerInterval) clearInterval(timerInterval);
-    timerInterval = setInterval(()=>{
-      const m = Math.floor(timeLeft/60);
-      const s = timeLeft % 60;
-      timerEl.textContent = `${m}:${String(s).padStart(2,'0')}`;
-      if(timeLeft <= 0){
-        clearInterval(timerInterval);
-        finishTest();
-      }
-      timeLeft--;
-    }, 1000);
-  }
 
-  // PDF генерація через jsPDF
-  function generatePDF(username, score, total, mistakes){
-    const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
-    if(!jsPDFClass) throw new Error('jsPDF не завантажено');
-    const doc = new jsPDFClass({ unit: 'pt', format: 'a4' });
-    const left = 40;
-    let y = 50;
-    doc.setFontSize(16);
-    doc.text('Результат тесту з Цивільного Захисту', left, y);
-    y += 24;
-    doc.setFontSize(12);
-    doc.text(`Ім'я: ${username}`, left, y); y += 18;
-    doc.text(`Дата: ${new Date().toLocaleString()}`, left, y); y += 18;
-    doc.text(`Балів: ${score} / ${total}`, left, y); y += 18;
-    const percent = Math.round(score/total*100);
-    doc.text(`Відсоток: ${percent}%`, left, y); y += 22;
-    doc.text(`Результат: ${percent >= 50 ? 'Тест СКЛАДЕНО' : 'ТЕСТ НЕ СКЛАДЕНО'}`, left, y); y += 26;
+const res = document.getElementById('resultContent');
+res.innerHTML = resultHTML;
+document.getElementById('resultBlock').style.display='block';
 
-    if(mistakes && mistakes.length>0){
-      doc.text('Список неправильних відповідей:', left, y); y += 18;
-      doc.setFontSize(11);
-      for(let i=0;i<mistakes.length;i++){
-        const m = mistakes[i];
-        const lines = doc.splitTextToSize(`${i+1}. ${m.q}`, 520);
-        doc.text(lines, left, y);
-        y += lines.length*14;
-        const selText = m.selectedText ? `${m.selectedLetter}. ${m.selectedText}` : 'не відповіли';
-        const corrText = `${m.correctLetter}. ${m.correctText}`;
-        const infoLines = doc.splitTextToSize(`Ваш варіант: ${selText}   |   Правильна: ${corrText}`, 520);
-        doc.text(infoLines, left, y);
-        y += infoLines.length*14 + 12;
-        // нова сторінка якщо місця мало
-        if(y > 740){
-          doc.addPage();
-          y = 50;
-        }
-      }
-    } else {
-      doc.text('Усі відповіді правильні.', left, y); y += 18;
-    }
 
-    // збереження
-    const safeName = (username || 'result').replace(/[^a-zA-Z0-9_\-]/g,'_').slice(0,50);
-    doc.save(`Результат_${safeName}.pdf`);
-  }
-
-  // безпечний вивід
-  function escapeHtml(str){
-    if(!str && str !== 0) return '';
-    return String(str)
-      .replaceAll('&','&amp;')
-      .replaceAll('<','&lt;')
-      .replaceAll('>','&gt;')
-      .replaceAll('"','&quot;')
-      .replaceAll("'",'&#039;');
-  }
-
-}); // DOMContentLoaded
+// Генерація PDF
+setTimeout(()=>{
+html2pdf().from(document.getElementById('resultBlock')).save('result.pdf');
+},500);
+}
 </script>
 </body>
 </html>
