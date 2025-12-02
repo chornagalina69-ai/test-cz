@@ -93,14 +93,14 @@ const questions = [
 { id:49,text:"Сталася аварія з загрозою небезпечних факторів. Об’єктова система оповіщення подала сигнал. Яка дія правильна?",options:{A:"Вимкнути звук та продовжувати роботу",B:"Виконати інструкції маршруту евакуації",C:"Збирати речі та чекати колег",D:"Вийти до парковки шукати керівника"}},
 { id:50,text:"Яке основне завдання аварійної зупинки виробництва?",options:{A:"Мінімізувати час простою",B:"Запобігти розвитку небезпечних факторів",C:"Зменшити витрати матеріалів",D:"Підготувати звіт"}},
 { id:51,text:"Що робити у разі пошкодження хімічного резервуару?",options:{A:"Ігнорувати і повідомити через тиждень",B:"Негайно евакуюватися та повідомити службу ЦЗ",C:"Продовжити роботу, якщо немає запаху",D:"Викликати таксі")},
-{ id:52,text:"Як діяти при тривозі у нічний час?",options:{A:"Поспати далі",B:"Одягнути захисний одяг та приготуватися до евакуації",C:"Вийти на вулицю без захисту",D:"Продовжити роботу")},
+{ id:52,text:"Як діяти при тривозі у нічний час?",options:{A:"Поспати далі",B:"Одягнути захисний одяг та приготуватися до евакуації",C:"Вийти на вулицю без захисту",D:"Продовжити роботу"}},
 { id:53,text:"Хто відповідає за організацію евакуації працівників?",options:{A:"Відділ маркетингу",B:"Керівник об’єкта/підприємства",C:"Рятувальники",D:"Медперсонал"}},
-{ id:54,text:"Що потрібно робити після сигналу «Увага всім!»?",options:{A:"Очікувати на додаткові вказівки та дотримуватись інструкцій",B:"Ігнорувати сигнал",C:"Продовжити роботу",D:"Залишити будівлю без перевірки"}),
+{ id:54,text:"Що потрібно робити після сигналу «Увага всім!»?",options:{A:"Очікувати на додаткові вказівки та дотримуватись інструкцій",B:"Ігнорувати сигнал",C:"Продовжити роботу",D:"Залишити будівлю без перевірки"}},
 { id:55,text:"Під час аварії на підприємстві, перша дія працівника:",options:{A:"Зателефонувати колегам",B:"Негайно виконати план реагування на НС",C:"Закрити вікна",D:"Продовжити роботу"}}
 ];
 
 // ----- ВІДПОВІДІ -----
-const answers = {
+const correctAnswers = {
 1:"B",2:"B",3:"C",4:"B",5:"A",6:"B",7:"D",8:"B",9:"B",10:"B",
 11:"B",12:"B",13:"C",14:"A",15:"C",16:"B",17:"B",18:"A",19:"B",20:"C",
 21:"D",22:"B",23:"A",24:"B",25:"B",26:"C",27:"B",28:"A",29:"B",30:"B",
@@ -109,9 +109,8 @@ const answers = {
 51:"B",52:"B",53:"B",54:"B",55:"A"
 };
 
-
 let currentQuestion = 0;
-let answers = Array(questions.length).fill(null);
+let userAnswers = Array(questions.length).fill(null);
 let timer;
 let timeLeft = 50*60; // 50 хвилин в секундах
 
@@ -136,34 +135,38 @@ function updateTimer() {
 function showQuestion() {
   const q = questions[currentQuestion];
   const container = document.getElementById('questionContainer');
-  container.innerHTML = `<div class="question"><b>Питання ${currentQuestion+1}:</b> ${q.q}</div>`;
+  container.innerHTML = `<div class="question"><b>Питання ${currentQuestion+1}:</b> ${q.text}</div>`;
+  
   let html = '<div class="answers">';
-  q.a.forEach((ans,i)=>{
-    html += `<label><input type="radio" name="answer" value="${i}" ${answers[currentQuestion]===i?'checked':''}> ${ans}</label>`;
-  });
+  for (let key in q.options) {
+    html += `<label><input type="radio" name="answer" value="${key}" ${userAnswers[currentQuestion]===key?'checked':''}> ${q.options[key]}</label>`;
+  }
   html += '</div>';
   container.innerHTML += html;
 }
 
 function nextQuestion() {
   const selected = document.querySelector('input[name="answer"]:checked');
-  if(selected) answers[currentQuestion] = parseInt(selected.value);
+  if(selected) userAnswers[currentQuestion] = selected.value;
   if(currentQuestion < questions.length-1) { currentQuestion++; showQuestion(); }
 }
 
 function prevQuestion() {
   const selected = document.querySelector('input[name="answer"]:checked');
-  if(selected) answers[currentQuestion] = parseInt(selected.value);
+  if(selected) userAnswers[currentQuestion] = selected.value;
   if(currentQuestion > 0) { currentQuestion--; showQuestion(); }
 }
 
 function finishTest() {
   const selected = document.querySelector('input[name="answer"]:checked');
-  if(selected) answers[currentQuestion] = parseInt(selected.value);
+  if(selected) userAnswers[currentQuestion] = selected.value;
   clearInterval(timer);
   
   let score = 0;
-  for(let i=0;i<correctAnswers.length;i++) if(answers[i]===correctAnswers[i]) score++;
+  for(let i=0;i<questions.length;i++){
+    const qId = questions[i].id;
+    if(userAnswers[i] === correctAnswers[qId]) score++;
+  }
   
   const percent = Math.round((score/questions.length)*100);
   const resultScreen = document.getElementById('resultScreen');
