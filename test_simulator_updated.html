@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Тест з Цивільного Захисту</title>
 <style>
-  body { font-family: Arial, sans-serif; background: #f3f4f6; padding: 20px; }
-  .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
-  h1 { text-align: center; }
-  .question { margin-bottom: 20px; }
-  .answers label { display: block; margin: 5px 0; }
-  .hidden { display: none; }
-  button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; background: #4CAF50; color: white; cursor: pointer; }
-  button:hover { background: #45a049; }
-  #timer { font-weight: bold; text-align: right; margin-bottom: 10px; }
+body { font-family: Arial, sans-serif; background: #f3f4f6; padding: 20px; }
+.container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+h1 { text-align: center; }
+.question { margin-bottom: 20px; }
+.answers label { display: block; margin: 5px 0; }
+.hidden { display: none; }
+button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; background: #4CAF50; color: white; cursor: pointer; }
+button:hover { background: #45a049; }
+#timer { font-weight: bold; text-align: right; margin-bottom: 10px; }
 </style>
 </head>
 <body>
@@ -42,10 +42,10 @@
 <script>
 // ---------------- ПИТАННЯ ----------------
 const questions = [
-  { id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
-  { id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
-  { id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
- { id:4,text:"Після сигналу сирени працівник не чув оголошення. Його перша дія?",options:{A:"Зателефонувати керівнику",B:"Увімкнути найближчий радіоприймач/телевізор",C:"Бігти до укриття",D:"Писати в месенджер колегам"}},
+  {id:1, text:"Що означає попереджувальний сигнал “Увага всім!”?", options:{A:"Потрібно негайно евакуюватися", B:"Увімкнути радіо/телебачення для отримання повідомлення", C:"Виходити на вулицю", D:"Чекати на інструкції через месенджер"}},
+  {id:2, text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?", options:{A:"Укриття в підземному переході", B:"Сховище або протирадіаційне укриття", C:"Балкон", D:"Будь-який приватний гараж"}},
+ { id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
+{ id:4,text:"Після сигналу сирени працівник не чув оголошення. Його перша дія?",options:{A:"Зателефонувати керівнику",B:"Увімкнути найближчий радіоприймач/телевізор",C:"Бігти до укриття",D:"Писати в месенджер колегам"}},
 { id:5,text:"Який вид випромінювання має найменшу проникну здатність?",options:{A:"Альфа",B:"Бета",C:"Гамма",D:"Нейтронне"}},
 { id:6,text:"Дезактивація — це:",options:{A:"Прання одягу",B:"Видалення радіоактивних речовин з поверхонь",C:"Очищення води",D:"Зниження температури"}},
 { id:7,text:"Ознакою радіаційного ураження НЕ є:",options:{A:"Нудота",B:"Запаморочення",C:"Лихоманка",D:"Підвищений апетит"}},
@@ -102,7 +102,12 @@ const questions = [
 
 // ----- ВІДПОВІДІ -----
 const correctAnswers = {
-  1:"B",2:"B",3:"C" // … і далі для всіх питань
+ 1:"B",2:"B",3:"C",4:"B",5:"A",6:"B",7:"D",8:"B",9:"B",10:"B",
+11:"B",12:"B",13:"C",14:"A",15:"C",16:"B",17:"B",18:"A",19:"B",20:"C",
+21:"D",22:"B",23:"A",24:"B",25:"B",26:"C",27:"B",28:"A",29:"B",30:"B",
+31:"B",32:"B",33:"B",34:"B",35:"A",36:"C",37:"B",38:"B",39:"B",40:"B",
+41:"B",42:"B",43:"B",44:"B",45:"B",46:"B",47:"B",48:"C",49:"B",50:"B",
+51:"B",52:"B",53:"B",54:"B",55:"A"
 };
 
 let currentQuestion = 0;
@@ -134,7 +139,7 @@ function showQuestion() {
   container.innerHTML = `<div class="question"><b>Питання ${currentQuestion+1}:</b> ${q.text}</div>`;
   let html = '<div class="answers">';
   for (let key in q.options) {
-    html += `<label><input type="radio" name="answer" value="${key}" ${userAnswers[currentQuestion]===key?'checked':''}> ${q.options[key]}</label>`;
+    html += `<label><input type="radio" name="answer" value="${key}" ${userAnswers[currentQuestion]===key?'checked':''}> ${key}: ${q.options[key]}</label>`;
   }
   html += '</div>';
   container.innerHTML += html;
@@ -151,4 +156,46 @@ function prevQuestion() {
   if(selected) userAnswers[currentQuestion] = selected.value;
   if(currentQuestion > 0) { currentQuestion--; showQuestion(); }
 }
+
+function finishTest() {
+  const selected = document.querySelector('input[name="answer"]:checked');
+  if(selected) userAnswers[currentQuestion] = selected.value;
+  clearInterval(timer);
+
+  let score = 0;
+  questions.forEach((q,i)=>{ if(userAnswers[i]===correctAnswers[q.id]) score++; });
+
+  const percent = Math.round((score/questions.length)*100);
+  const resultScreen = document.getElementById('resultScreen');
+  document.getElementById('testScreen').classList.add('hidden');
+  resultScreen.classList.remove('hidden');
+
+  const name = localStorage.getItem("userName");
+
+  if(percent >= 50) {
+    resultScreen.innerHTML = `<h2>Вітаємо, ${name}! Тест складено.</h2><p>Ваш результат: ${score}/${questions.length} (${percent}%)</p><p>Результат відправлено на пошту.</p>`;
+    // Відправка через FormSubmit
+    const form = document.createElement('form');
+    form.action = "https://formsubmit.co/chorna.galina69@gmail.com";
+    form.method = "POST";
+    form.target = "_blank";
+    form.style.display = "none";
+    form.appendChild(new InputElement("Ім'я", name));
+    form.appendChild(new InputElement("Результат", `${score}/${questions.length} (${percent}%)`));
+    document.body.appendChild(form);
+    form.submit();
+  } else {
+    resultScreen.innerHTML = `<h2>На жаль, ${name}. Тест не складено.</h2><p>Ваш результат: ${score}/${questions.length} (${percent}%)</p>`;
+  }
+}
+
+function InputElement(name, value){
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.name = name;
+  input.value = value;
+  return input;
+}
 </script>
+</body>
+</html>
