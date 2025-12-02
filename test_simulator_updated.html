@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Тест з Цивільного Захисту — Симулятор</title>
+<title>Тест з Цивільного Захисту</title>
 <style>
 body{font-family:system-ui; background:#f3f4f6; margin:0; padding:24px;}
 .container{max-width:900px; margin:0 auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.1);}
@@ -92,27 +92,6 @@ const allQuestions = [
 { id:54,text:"При радіаційній загрозі працівники повинні:",options:{A:"Залишатися на місці, прикривши дихальні шляхи",B:"Відразу виходити на вулицю",C:"Пити воду та продовжувати роботу",D:"Ігнорувати сигнал"}},
 { id:55,text:"Що потрібно зробити після завершення евакуації?",options:{A:"Повернутися на робоче місце самостійно",B:"Зібратися у безпечному місці та дочекатися інструкцій",C:"Продовжувати роботу у сусідньому приміщенні",D:"Викликати таксі")}
 ];
-
-// ---------------- ВИБІР 20 ПИТАНЬ ----------------
-function getRandomQuestions(all, count){
-  let shuffled = [...all];
-  for(let i=shuffled.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
-  }
-  return shuffled.slice(0,count).map(q=>{
-    const keys = Object.keys(q.options);
-    for(let i=keys.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [keys[i],keys[j]]=[keys[j],keys[i]];
-    }
-    const newOptions = {};
-    keys.forEach(k=>newOptions[k]=q.options[k]);
-    return {...q,options:newOptions};
-  });
-}
-
-let questions = getRandomQuestions(allQuestions, 20);
 
 // ---------------- ВІДПОВІДІ (ПРИКЛАД — Потрібно заповнити реальні відповіді) ----------------
 const answers = {
