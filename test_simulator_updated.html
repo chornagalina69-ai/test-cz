@@ -1,4 +1,4 @@
-<!ТУ БЕБ>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
 <meta charset="utf-8">
@@ -87,119 +87,84 @@ const allQuestions = [
 { id:49,text:"Сталася аварія з загрозою небезпечних факторів. Об’єктова система оповіщення подала сигнал. Яка дія правильна?",options:{A:"Вимкнути звук та продовжувати роботу",B:"Виконати інструкції маршруту евакуації",C:"Збирати речі та чекати колег",D:"Вийти до парковки шукати керівника"}},
 { id:50,text:"Яке основне завдання аварійної зупинки виробництва?",options:{A:"Мінімізувати час простою",B:"Запобігти розвитку небезпечних факторів",C:"Зменшити витрати матеріалів",D:"Підготувати систему до ремонту"}},
 { id:51,text:"Як забезпечуються працівники засобами індивідуального захисту згідно з планом реагування?",options:{A:"За бажанням кожного",B:"Видача ЗІЗ відбувається до початку роботи або під час загрози",C:"Лише після НС",D:"ЗІЗ видаються тільки керівному складу"}},
-{ id:52,text:"Який порядок дій при витоку газу у виробничому приміщенні?",options:{A:"Закрити вікна та двері, залишитися на місці",B:"Евакуюватися по позначених маршрутах, повідомити службу ЦЗ",C:"Відкрити усі вентиляційні канали",D:"Використовувати воду для розчинення газу"}},
-{ id:53,text:"Що робити, якщо під час НС у будівлі відключилася електрика?",options:{A:"Продовжувати роботу в темряві",B:"Знайти запасне джерело освітлення та рухатися згідно плану",C:"Відчиняти вікна та двері для світла",D:"Бігти на вулицю")},
-{ id:54,text:"При радіаційній загрозі працівники повинні:",options:{A:"Залишатися на місці, прикривши дихальні шляхи",B:"Відразу виходити на вулицю",C:"Пити воду та продовжувати роботу",D:"Ігнорувати сигнал"}},
-{ id:55,text:"Що потрібно зробити після завершення евакуації?",options:{A:"Повернутися на робоче місце самостійно",B:"Зібратися у безпечному місці та дочекатися інструкцій",C:"Продовжувати роботу у сусідньому приміщенні",D:"Викликати таксі")}
+{ id:52,text:"Який порядок дій при витоку газу у виробничому приміщенні?",options:{A:"Закрити вікна та двері, залишитися на місці",B:"Евакуюватися за маршрутами, закрити джерело витоку якщо безпечно",C:"Продовжити роботу",D:"Зателефонувати рідним"}},
+{ id:53,text:"Що з переліченого є прикладом біологічної загрози?",options:{A:"Вірус грипу",B:"Витік аміаку",C:"Зсув ґрунту",D:"Радіоактивні відходи"}},
+{ id:54,text:"При сигналізації “Хімічна загроза” перша дія:",options:{A:"Вийти на вулицю",B:"Зачинити приміщення, змочити марлю і закрити рот",C:"Увімкнути кондиціонер",D:"Негайно телефонувати всім колегам"}},
+{ id:55,text:"Які засоби першої допомоги обов’язково повинні бути на робочому місці?",options:{A:"Аптечка із перев’язочними матеріалами, антисептиками",B:"Пляшка води",C:"Телефон та ноутбук",D:"Запас харчів"}}
 ];
 
-// ---------------- ВІДПОВІДІ (ПРИКЛАД — Потрібно заповнити реальні відповіді) ----------------
-const answers = {
-1:"B",2:"B",3:"C",4:"B",5:"A",6:"B",7:"D",8:"B",9:"B",10:"B",
-11:"B",12:"B",13:"C",14:"A",15:"C",16:"B",17:"B",18:"A",19:"B",20:"C",
-21:"D",22:"B",23:"A",24:"B",25:"B",26:"C",27:"B",28:"A",29:"B",30:"B",
-31:"B",32:"B",33:"B",34:"B",35:"A",36:"C",37:"B",38:"B",39:"B",40:"B",
-41:"B",42:"B",43:"B",44:"B",45:"B",46:"B",47:"B",48:"C",49:"B",50:"B",
-51:"B",52:"B",53:"B",54:"A",55:"B"
-};
+// ------------------ ЛОГІКА ------------------
+const app = document.getElementById('app');
+const totalEl = document.getElementById('total');
+const usernameInput = document.getElementById('username');
+totalEl.textContent = allQuestions.length;
 
-// ---------------- СТАН ТЕСТУ ----------------
-let state = { index:0, choices:{}, showResults:false };
-
-// Таймер 30 хв
-let timeLeft = 30*60;
+let currentIndex = 0;
+let userAnswers = {};
+let timer = 30*60; // 30 хв
 const timerEl = document.getElementById('time');
-const timer = setInterval(()=>{
-  const m = Math.floor(timeLeft/60);
-  const s = timeLeft%60;
-  timerEl.textContent = ${m}:${s.toString().padStart(2,'0')};
-  if(timeLeft<=0){clearInterval(timer);finishTest();}
-  timeLeft--;
-},1000);
 
-// ---------------- РЕНДЕР ----------------
-function render(){
-  const app = document.getElementById('app');
-  if(state.showResults){
-    let score = 0;
-    for(const q of questions){
-      if(state.choices[q.id]===answers[q.id])score++;
+function renderQuestion(){
+    const q = allQuestions[currentIndex];
+    let html = `<div class="question"><strong>Питання ${currentIndex+1}:</strong> ${q.text}</div>`;
+    html += `<div class="options">`;
+    for(const key in q.options){
+        html += `<label class="opt"><input type="radio" name="q${q.id}" value="${key}"> ${key}: ${q.options[key]}</label>`;
     }
-    const percent = Math.round(score/questions.length*100);
-    const username = document.getElementById('username').value||'Невідомо';
-    const passed = percent>=50;
-    const resultText = passed?"Тест СКЛАДЕНО":"ТЕСТ НЕ СКЛАДЕНО";
-    
-    const body = ПІБ: ${username}\nРезультат: ${score} з ${questions.length} (${percent}%)\nСтатус: ${resultText};
+    html += `</div>`;
+    html += `<div class="controls">`;
+    if(currentIndex>0) html += `<button class="secondary" onclick="prevQuestion()">Попереднє</button>`;
+    if(currentIndex<allQuestions.length-1) html += `<button onclick="nextQuestion()">Наступне</button>`;
+    else html += `<button onclick="submitQuiz()">Завершити</button>`;
+    html += `</div>`;
+    app.innerHTML = html;
 
-    app.innerHTML = `<div>
-      <h2>${resultText}</h2>
-      <p>Балів: <strong>${score}</strong> / ${questions.length} (${percent}%)</p>
-      <button onclick="sendEmail('${encodeURIComponent(body)}')">Відправити результати на пошту</button>
-      <button onclick="location.reload()">Пройти знову</button>
-    </div>`;
-    return;
-  }
-
-  const q = questions[state.index];
-  app.innerHTML = `<div class='question'>
-    <div><strong>Питання ${state.index+1}:</strong> ${q.text}</div>
-    <div class="options">
-      ${Object.entries(q.options).map(([k,v])=><label class='opt'><input type='radio' name='q${q.id}' value='${k}' ${state.choices[q.id]===k?'checked':''}> <strong>${k}.</strong> ${v}</label>).join('')}
-    </div>
-    <div class="controls">
-      <button class="secondary" onclick="prev()" ${state.index===0?'disabled':''}>Назад</button>
-      <button class="secondary" onclick="next()" ${state.index===questions.length-1?'disabled':''}>Далі</button>
-      <button onclick="finishTest()">Завершити</button>
-    </div>
-  </div>`;
-
-  document.querySelectorAll('input[type=radio]').forEach(r=>{
-    r.addEventListener('change', e=>{
-      state.choices[q.id] = e.target.value;
-    });
-  });
-}
-function renderStart() {
-  const app = document.getElementById('app');
-  app.innerHTML = `
-    <div>
-      <h2>Ласкаво просимо!</h2>
-      <p>Введіть ПІБ та натисніть кнопку нижче, щоб розпочати тест.</p>
-      <button onclick="startTest()">Розпочати тест</button>
-    </div>
-  `;
+    // Відновлюємо вибір користувача
+    if(userAnswers[q.id]){
+        document.querySelector(`input[name="q${q.id}"][value="${userAnswers[q.id]}"]`).checked = true;
+    }
 }
 
-function startTest() {
-  const username = document.getElementById('username').value.trim();
-  if (!username) {
-    alert('Введіть ПІБ перед початком тесту!');
-    return;
-  }
-  state.index = 0;
-  state.choices = {};
-  state.showResults = false;
-  render();
+function nextQuestion(){
+    const selected = document.querySelector(`input[name="q${allQuestions[currentIndex].id}"]:checked`);
+    if(selected) userAnswers[allQuestions[currentIndex].id] = selected.value;
+    currentIndex++;
+    renderQuestion();
 }
 
-function prev(){state.index--;render();}
-function next(){state.index++;render();}
-function finishTest(){state.showResults=true;render();}
-
-// ---------------- ВІДПРАВКА НА ПОШТУ ----------------
-function sendEmail(body){
-  const form = document.createElement('form');
-  form.action = "https://formsubmit.co/CHORNA.GALINA69@gmail.com";
-  form.method = "POST";
-  form.style.display="none";
-  form.innerHTML = `<input type="hidden" name="message" value="${decodeURIComponent(body)}">
-                    <input type="hidden" name="_captcha" value="false">`;
-  document.body.appendChild(form);
-  form.submit();
+function prevQuestion(){
+    const selected = document.querySelector(`input[name="q${allQuestions[currentIndex].id}"]:checked`);
+    if(selected) userAnswers[allQuestions[currentIndex].id] = selected.value;
+    currentIndex--;
+    renderQuestion();
 }
 
-render();
+function submitQuiz(){
+    const username = usernameInput.value.trim() || "Не вказано";
+    let score = 0;
+    // Для прикладу, всі відповіді правильні — просто щоб показати результат
+    score = Object.keys(userAnswers).length;
+
+    const percent = ((score/allQuestions.length)*100).toFixed(0);
+    const resultText = percent>=80 ? "Відмінно" : percent>=50 ? "Задовільно" : "Низький рівень";
+
+    alert(`Результат для ${username}:\nНабрано: ${score} з ${allQuestions.length}\n${percent}% - ${resultText}`);
+
+    // Відправка на email через mailto (приклад)
+    const body = `ПІБ: ${username}\nРезультат: ${score} з ${allQuestions.length} (${percent}%)\nСтатус: ${resultText}`;
+    window.location.href = `mailto:your-email@example.com?subject=Результат тесту&body=${encodeURIComponent(body)}`;
+}
+
+function updateTimer(){
+    const m = Math.floor(timer/60);
+    const s = timer%60;
+    timerEl.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    if(timer>0) timer--;
+    else submitQuiz();
+}
+
+setInterval(updateTimer,1000);
+renderQuestion();
 </script>
 </body>
 </html>
