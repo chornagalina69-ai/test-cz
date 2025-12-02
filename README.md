@@ -181,6 +181,28 @@ function render(){
     });
   });
 }
+function renderStart() {
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div>
+      <h2>Ласкаво просимо!</h2>
+      <p>Введіть ПІБ та натисніть кнопку нижче, щоб розпочати тест.</p>
+      <button onclick="startTest()">Розпочати тест</button>
+    </div>
+  `;
+}
+
+function startTest() {
+  const username = document.getElementById('username').value.trim();
+  if (!username) {
+    alert('Введіть ПІБ перед початком тесту!');
+    return;
+  }
+  state.index = 0;
+  state.choices = {};
+  state.showResults = false;
+  render();
+}
 
 function prev(){state.index--;render();}
 function next(){state.index++;render();}
