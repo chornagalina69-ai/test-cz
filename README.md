@@ -3,43 +3,47 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Тест з Цивільного Захисту — Симулятор</title>
+<title>Тест з ЦЗ — Симулятор</title>
 <style>
-body{font-family:system-ui; background:#f3f4f6; margin:0; padding:24px;}
-.container{max-width:900px; margin:0 auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.1);}
-h1{margin:0 0 12px; font-size:22px;}
-.question{margin:18px 0; padding:14px; border-radius:6px; border:1px solid #e5e7eb;}
-.options{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
-label.opt{padding:10px; border:1px solid #ddd; border-radius:6px; cursor:pointer; display:block;}
-.controls{display:flex; justify-content:space-between; margin-top:16px;}
-button{background:#0ea5a4; color:white; padding:8px 12px; border:none; border-radius:6px; cursor:pointer;}
-button.secondary{background:#e5e7eb; color:#111;}
-.timer{font-size:18px; font-weight:600; color:#b91c1c; margin-bottom:12px;}
-input#username{width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; border-radius:6px;}
+body{font-family:system-ui;background:#f3f4f6;margin:0;padding:24px;}
+.container{max-width:900px;margin:0 auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.1);}
+h1{margin:0 0 12px;font-size:22px;}
+.question{margin:18px 0;padding:14px;border-radius:6px;border:1px solid #e5e7eb;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+label.opt{padding:10px;border:1px solid #ddd;border-radius:6px;cursor:pointer;display:block;}
+.controls{display:flex;justify-content:space-between;margin-top:16px;}
+button{background:#0ea5a4;color:white;padding:8px 12px;border:none;border-radius:6px;cursor:pointer;}
+button.secondary{background:#e5e7eb;color:#111;}
+.timer{font-size:18px;font-weight:600;color:#b91c1c;margin-bottom:12px;}
+input[type=text]{padding:8px;width:100%;margin-top:4px;border-radius:6px;border:1px solid #ccc;}
 </style>
 </head>
 <body>
 <div class="container">
 <h1>Тест з Цивільного Захисту — Симулятор</h1>
 
-<div class="timer">Час: <span id="time">30:00</span></div>
-
-<div style="margin-bottom:15px">
-<label><strong>Введіть ПІБ:</strong></label><br>
-<input id="username" type="text" placeholder="Ваше ПІБ" />
+<div id="loginDiv">
+  <label><strong>Введіть ПІБ:</strong></label><br>
+  <input id="username" type="text" placeholder="Ваше ПІБ" />
+  <button id="startTest" style="margin-top:12px;">Розпочати тест</button>
 </div>
 
-<p>Питань: <span id="total">55</span></p>
-<div id="app"></div>
+<div id="testDiv" style="display:none;">
+  <div class="timer">Час: <span id="time">30:00</span></div>
+  <p>Питань: <span id="total">55</span></p>
+  <div id="app"></div>
 </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
 // ---------------- ПИТАННЯ ----------------
-const questions = [
-{ id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
-{ id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
-{ id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
-{ id:4,text:"Після сигналу сирени працівник не чув оголошення. Його перша дія?",options:{A:"Зателефонувати керівнику",B:"Увімкнути найближчий радіоприймач/телевізор",C:"Бігти до укриття",D:"Писати в месенджер колегам"}},
+const allQuestions = [
+  {id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
+  {id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
+  {id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
+  { id:4,text:"Після сигналу сирени працівник не чув оголошення. Його перша дія?",options:{A:"Зателефонувати керівнику",B:"Увімкнути найближчий радіоприймач/телевізор",C:"Бігти до укриття",D:"Писати в месенджер колегам"}},
 { id:5,text:"Який вид випромінювання має найменшу проникну здатність?",options:{A:"Альфа",B:"Бета",C:"Гамма",D:"Нейтронне"}},
 { id:6,text:"Дезактивація — це:",options:{A:"Прання одягу",B:"Видалення радіоактивних речовин з поверхонь",C:"Очищення води",D:"Зниження температури"}},
 { id:7,text:"Ознакою радіаційного ураження НЕ є:",options:{A:"Нудота",B:"Запаморочення",C:"Лихоманка",D:"Підвищений апетит"}},
@@ -85,58 +89,81 @@ const questions = [
 { id:47,text:"Які дії працівника при отриманні сигналу щодо аварійної зупинки виробництва?",options:{A:"Завершити особисті справи",B:"Негайно виконати дії своїх інструкцій і відключити обладнання",C:"Зачекати додаткових вказівок у чаті колег",D:"Самостійно змінити маршрут евакуації"}},
 { id:48,text:"Що робить персонал після аварійної зупинки обладнання згідно з планом реагування?",options:{A:"Повертається до роботи",B:"Залишається на місці, чекаючи дозволу",C:"Негайно залишає небезпечну зону за встановленими шляхами",D:"Перевіряє документацію"}},
 { id:49,text:"Сталася аварія з загрозою небезпечних факторів. Об’єктова система оповіщення подала сигнал. Яка дія правильна?",options:{A:"Вимкнути звук та продовжувати роботу",B:"Виконати інструкції маршруту евакуації",C:"Збирати речі та чекати колег",D:"Вийти до парковки шукати керівника"}},
-{ id:50,text:"Яке основне завдання аварійної зупинки виробництва?",options:{A:"Мінімізувати час простою",B:"Запобігти розвитку небезпечних факторів",C:"Зменшити витрати матеріалів",D:"Підготувати систему до ремонту"}},
-{ id:51,text:"Як забезпечуються працівники засобами індивідуального захисту згідно з планом реагування?",options:{A:"За бажанням кожного",B:"Видача ЗІЗ відбувається до початку роботи або під час загрози",C:"Лише після НС",D:"ЗІЗ видаються тільки керівному складу"}},
-{ id:52,text:"Який порядок дій при витоку газу у виробничому приміщенні?",options:{A:"Відкрити всі вікна і двері",B:"Зачинити вентилятор, герметизувати приміщення, сповістити керівництво",C:"Продовжити роботу",D:"Викликати друзів на допомогу"}},
-{ id:53,text:"Що відноситься до основних заходів безпеки під час евакуації?",options:{A:"Панікувати та штовхатися",B:"Дотримуватись маршруту, не бігти, уникати натовпу",C:"Йти назад, якщо багато людей",D:"Використовувати ліфт у будь-якому випадку"}},
-{ id:54,text:"При хімічній аварії на вулиці важливо:",options:{A:"Залишатися на місці",B:"Переміщатися проти вітру у безпечну зону",C:"Йти на дах будинку",D:"Пити багато води"}},
-{ id:55,text:"Основна мета цивільного захисту:",options:{A:"Забезпечення безпеки населення та зменшення наслідків НС",B:"Контроль за робочим графіком",C:"Проведення нарад",D:"Облік майна"}}
+{ id:50,text:"Яке основне завдання аварійної зупинки виробництва?",options:{A:"Мінімізувати час простою",B:"Запобігти розвитку небезпечних факторів",C:"Зменшити витрати матеріалів",D:"Підготувати звіт"}},
+{ id:51,text:"Що робити у разі пошкодження хімічного резервуару?",options:{A:"Ігнорувати і повідомити через тиждень",B:"Негайно евакуюватися та повідомити службу ЦЗ",C:"Продовжити роботу, якщо немає запаху",D:"Викликати таксі")},
+{ id:52,text:"Як діяти при тривозі у нічний час?",options:{A:"Поспати далі",B:"Одягнути захисний одяг та приготуватися до евакуації",C:"Вийти на вулицю без захисту",D:"Продовжити роботу")},
+{ id:53,text:"Хто відповідає за організацію евакуації працівників?",options:{A:"Відділ маркетингу",B:"Керівник об’єкта/підприємства",C:"Рятувальники",D:"Медперсонал"}},
+{ id:54,text:"Що потрібно робити після сигналу «Увага всім!»?",options:{A:"Очікувати на додаткові вказівки та дотримуватись інструкцій",B:"Ігнорувати сигнал",C:"Продовжити роботу",D:"Залишити будівлю без перевірки"}),
+{id:55,text:"Під час аварії на підприємстві, перша дія працівника:",options:{A:"Зателефонувати колегам",B:"Негайно виконати план реагування на НС",C:"Закрити вікна",D:"Продовжити роботу"}}
 ];
 
-// ---------------- ВІДПОВІДІ ----------------
+// ----- ВІДПОВІДІ -----
 const answers = {
 1:"B",2:"B",3:"C",4:"B",5:"A",6:"B",7:"D",8:"B",9:"B",10:"B",
 11:"B",12:"B",13:"C",14:"A",15:"C",16:"B",17:"B",18:"A",19:"B",20:"C",
 21:"D",22:"B",23:"A",24:"B",25:"B",26:"C",27:"B",28:"A",29:"B",30:"B",
 31:"B",32:"B",33:"B",34:"B",35:"A",36:"C",37:"B",38:"B",39:"B",40:"B",
 41:"B",42:"B",43:"B",44:"B",45:"B",46:"B",47:"B",48:"C",49:"B",50:"B",
-51:"B",52:"B",53:"B",54:"B",55:"A"
+51:"B",52:"B",53:"B",54:"B",55:"B"
 };
 
-// ---------------- СТАН ТЕСТУ ----------------
+// ----- СТАН ТЕСТУ -----
 let state = { index:0, choices:{}, showResults:false };
+let testQuestions = [];
 
-// Таймер 30 хв
-let timeLeft = 30*60;
-const timerEl = document.getElementById('time');
-const timer = setInterval(()=>{
-  const m = Math.floor(timeLeft/60);
-  const s = timeLeft%60;
-  timerEl.textContent = `${m}:${s.toString().padStart(2,'0')}`;
-  if(timeLeft<=0){clearInterval(timer);finishTest();}
-  timeLeft--;
-},1000);
-
-// ---------------- РЕНДЕР ----------------
-function render(){
-  const app = document.getElementById('app');
-  if(state.showResults){
-    const score = grade();
-    const percent = Math.round(score/Object.keys(answers).length*100);
-    const username = document.getElementById('username').value||'Невідомо';
-    const passed = percent>=50;
-    const resultText = passed?"Тест СКЛАДЕНО":"ТЕСТ НЕ СКЛАДЕНО";
-    const body = `ПІБ: ${username}\nРезультат: ${score} з ${Object.keys(answers).length} (${percent}%)\nСтатус: ${resultText}`;
-    sendEmail(body);
-    app.innerHTML = `<div>
-      <h2>${resultText}</h2>
-      <p>Балів: <strong>${score}</strong> / ${Object.keys(answers).length}</p>
-      <button onclick="location.reload()">Пройти знову</button>
-    </div>`;
-    return;
+// ----- РОЗПОЧАТИ ТЕСТ -----
+document.getElementById('startTest').addEventListener('click',()=>{
+  const username = document.getElementById('username').value.trim();
+  if(!username){ 
+    alert("Будь ласка, введіть ПІБ"); 
+    return; 
   }
 
-  const q = questions[state.index];
+  document.getElementById('loginDiv').style.display='none';
+  document.getElementById('testDiv').style.display='block';
+  testQuestions = allQuestions;
+  render();
+  startTimer();
+});
+
+// ----- ТАЙМЕР -----
+let timeLeft = 30*60;
+let timerInterval;
+function startTimer(){
+  const timerEl = document.getElementById('time');
+  timerInterval = setInterval(()=>{
+    const m=Math.floor(timeLeft/60), s=timeLeft%60;
+    timerEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    if(timeLeft<=0){clearInterval(timerInterval); finishTest();}
+    timeLeft--;
+  },1000);
+}
+
+// ----- РЕНДЕР -----
+function render(){
+  const app = document.getElementById('app');
+  
+if(state.showResults){
+    clearInterval(timerInterval);
+    const score = grade();
+    const percent = Math.round(score/testQuestions.length*100);
+    const username = document.getElementById('username').value;
+    const passed = percent>=50;
+    const resultText = passed?"Тест СКЛАДЕНО ВІТАЄМО Надішліть результати":"ТЕСТ НЕ СКЛАДЕНО";
+
+    app.innerHTML = `<div>
+      <h2>${resultText}</h2>
+      <p>Балів: <strong>${score}</strong> / ${testQuestions.length}</p>
+      <button onclick="location.reload()">Пройти знову</button>
+    </div>`;
+
+    // --- ДОДАНО: автоматична генерація PDF ---
+    generatePDF(username, score, testQuestions.length);
+
+    return;
+}
+
+  const q = testQuestions[state.index];
   app.innerHTML = `<div class='question'>
     <div><strong>Питання ${state.index+1}:</strong> ${q.text}</div>
     <div class="options">
@@ -144,34 +171,35 @@ function render(){
     </div>
     <div class="controls">
       <button class="secondary" onclick="prev()" ${state.index===0?'disabled':''}>Назад</button>
-      <button class="secondary" onclick="next()" ${state.index===questions.length-1?'disabled':''}>Далі</button>
+      <button class="secondary" onclick="next()" ${state.index===testQuestions.length-1?'disabled':''}>Далі</button>
       <button onclick="finishTest()">Завершити</button>
     </div>
   </div>`;
 
   document.querySelectorAll('input[type=radio]').forEach(r=>{
-    r.addEventListener('change', e=>{
-      state.choices[q.id] = e.target.value;
-    });
+    r.addEventListener('change', e=>{ state.choices[q.id]=e.target.value; });
   });
 }
 
 function prev(){state.index--;render();}
 function next(){state.index++;render();}
 function finishTest(){state.showResults=true;render();}
-function grade(){let sc=0;for(const q of questions){if(state.choices[q.id]===answers[q.id])sc++;}return sc;}
-function sendEmail(text){
-  const form = document.createElement('form');
-  form.action = "https://formsubmit.co/H.duzhar@esbu.gov.ua";
-  form.method = "POST";
-  form.style.display="none";
-  form.innerHTML = `<input type="hidden" name="message" value="${text}">
-                    <input type="hidden" name="_captcha" value="false">`;
-  document.body.appendChild(form);
-  form.submit();
-}
+function grade(){let sc=0;for(const q of testQuestions){if(state.choices[q.id]===answers[q.id])sc++;}return sc;}
 
-render();
+// ----- ГЕНЕРАЦІЯ PDF -----
+function generatePDF(username, score, total){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  doc.setFontSize(16);
+  doc.text(`Результати тесту з Цивільного Захисту`, 20, 20);
+  doc.setFontSize(12);
+  doc.text(`Ім'я: ${username}`, 20, 35);
+  doc.text(`Балів: ${score} / ${total}`, 20, 45);
+  doc.text(`Відсоток: ${Math.round(score/total*100)}%`, 20, 55);
+  const resultText = (score/total*100)>=50 ? "Тест СКЛАДЕНО" : "ТЕСТ НЕ СКЛАДЕНО";
+  doc.text(`Результат: ${resultText}`, 20, 65);
+  doc.save(`Результат_${username.replaceAll(' ','_')}.pdf`);
+}
 </script>
 </body>
 </html>
