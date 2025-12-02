@@ -29,13 +29,13 @@ input#username{width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; b
 <input id="username" type="text" placeholder="Ваше ПІБ" />
 </div>
 
-<p>Питань: <span id="total">55</span></p>
+<p>Питань: <span id="total">20</span></p>
 <div id="app"></div>
 </div>
 
 <script>
-// ---------------- ПИТАННЯ ----------------
-const questions = [
+// ---------------- ВСІ 55 ПИТАНЬ ----------------
+const allQuestions = [
 { id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
 { id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
 { id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
@@ -87,20 +87,41 @@ const questions = [
 { id:49,text:"Сталася аварія з загрозою небезпечних факторів. Об’єктова система оповіщення подала сигнал. Яка дія правильна?",options:{A:"Вимкнути звук та продовжувати роботу",B:"Виконати інструкції маршруту евакуації",C:"Збирати речі та чекати колег",D:"Вийти до парковки шукати керівника"}},
 { id:50,text:"Яке основне завдання аварійної зупинки виробництва?",options:{A:"Мінімізувати час простою",B:"Запобігти розвитку небезпечних факторів",C:"Зменшити витрати матеріалів",D:"Підготувати систему до ремонту"}},
 { id:51,text:"Як забезпечуються працівники засобами індивідуального захисту згідно з планом реагування?",options:{A:"За бажанням кожного",B:"Видача ЗІЗ відбувається до початку роботи або під час загрози",C:"Лише після НС",D:"ЗІЗ видаються тільки керівному складу"}},
-{ id:52,text:"Який порядок дій при витоку газу у виробничому приміщенні?",options:{A:"Відкрити всі вікна і двері",B:"Зачинити вентилятор, герметизувати приміщення, сповістити керівництво",C:"Продовжити роботу",D:"Викликати друзів на допомогу"}},
-{ id:53,text:"Що відноситься до основних заходів безпеки під час евакуації?",options:{A:"Панікувати та штовхатися",B:"Дотримуватись маршруту, не бігти, уникати натовпу",C:"Йти назад, якщо багато людей",D:"Використовувати ліфт у будь-якому випадку"}},
-{ id:54,text:"При хімічній аварії на вулиці важливо:",options:{A:"Залишатися на місці",B:"Переміщатися проти вітру у безпечну зону",C:"Йти на дах будинку",D:"Пити багато води"}},
-{ id:55,text:"Основна мета цивільного захисту:",options:{A:"Забезпечення безпеки населення та зменшення наслідків НС",B:"Контроль за робочим графіком",C:"Проведення нарад",D:"Облік майна"}}
+{ id:52,text:"Який порядок дій при витоку газу у виробничому приміщенні?",options:{A:"Закрити вікна та двері, залишитися на місці",B:"Евакуюватися по позначених маршрутах, повідомити службу ЦЗ",C:"Відкрити усі вентиляційні канали",D:"Використовувати воду для розчинення газу"}},
+{ id:53,text:"Що робити, якщо під час НС у будівлі відключилася електрика?",options:{A:"Продовжувати роботу в темряві",B:"Знайти запасне джерело освітлення та рухатися згідно плану",C:"Відчиняти вікна та двері для світла",D:"Бігти на вулицю")},
+{ id:54,text:"При радіаційній загрозі працівники повинні:",options:{A:"Залишатися на місці, прикривши дихальні шляхи",B:"Відразу виходити на вулицю",C:"Пити воду та продовжувати роботу",D:"Ігнорувати сигнал"}},
+{ id:55,text:"Що потрібно зробити після завершення евакуації?",options:{A:"Повернутися на робоче місце самостійно",B:"Зібратися у безпечному місці та дочекатися інструкцій",C:"Продовжувати роботу у сусідньому приміщенні",D:"Викликати таксі")}
 ];
 
-// ---------------- ВІДПОВІДІ ----------------
+// ---------------- ВИБІР 20 ПИТАНЬ ----------------
+function getRandomQuestions(all, count){
+  let shuffled = [...all];
+  for(let i=shuffled.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
+  }
+  return shuffled.slice(0,count).map(q=>{
+    const keys = Object.keys(q.options);
+    for(let i=keys.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [keys[i],keys[j]]=[keys[j],keys[i]];
+    }
+    const newOptions = {};
+    keys.forEach(k=>newOptions[k]=q.options[k]);
+    return {...q,options:newOptions};
+  });
+}
+
+let questions = getRandomQuestions(allQuestions, 20);
+
+// ---------------- ВІДПОВІДІ (ПРИКЛАД — Потрібно заповнити реальні відповіді) ----------------
 const answers = {
 1:"B",2:"B",3:"C",4:"B",5:"A",6:"B",7:"D",8:"B",9:"B",10:"B",
 11:"B",12:"B",13:"C",14:"A",15:"C",16:"B",17:"B",18:"A",19:"B",20:"C",
 21:"D",22:"B",23:"A",24:"B",25:"B",26:"C",27:"B",28:"A",29:"B",30:"B",
 31:"B",32:"B",33:"B",34:"B",35:"A",36:"C",37:"B",38:"B",39:"B",40:"B",
 41:"B",42:"B",43:"B",44:"B",45:"B",46:"B",47:"B",48:"C",49:"B",50:"B",
-51:"B",52:"B",53:"B",54:"B",55:"A"
+51:"B",52:"B",53:"B",54:"A",55:"B"
 };
 
 // ---------------- СТАН ТЕСТУ ----------------
@@ -121,16 +142,21 @@ const timer = setInterval(()=>{
 function render(){
   const app = document.getElementById('app');
   if(state.showResults){
-    const score = grade();
-    const percent = Math.round(score/Object.keys(answers).length*100);
+    let score = 0;
+    for(const q of questions){
+      if(state.choices[q.id]===answers[q.id])score++;
+    }
+    const percent = Math.round(score/questions.length*100);
     const username = document.getElementById('username').value||'Невідомо';
     const passed = percent>=50;
     const resultText = passed?"Тест СКЛАДЕНО":"ТЕСТ НЕ СКЛАДЕНО";
-    const body = `ПІБ: ${username}\nРезультат: ${score} з ${Object.keys(answers).length} (${percent}%)\nСтатус: ${resultText}`;
-    sendEmail(body);
+    
+    const body = `ПІБ: ${username}\nРезультат: ${score} з ${questions.length} (${percent}%)\nСтатус: ${resultText}`;
+
     app.innerHTML = `<div>
       <h2>${resultText}</h2>
-      <p>Балів: <strong>${score}</strong> / ${Object.keys(answers).length}</p>
+      <p>Балів: <strong>${score}</strong> / ${questions.length} (${percent}%)</p>
+      <button onclick="sendEmail('${encodeURIComponent(body)}')">Відправити результати на пошту</button>
       <button onclick="location.reload()">Пройти знову</button>
     </div>`;
     return;
@@ -159,13 +185,14 @@ function render(){
 function prev(){state.index--;render();}
 function next(){state.index++;render();}
 function finishTest(){state.showResults=true;render();}
-function grade(){let sc=0;for(const q of questions){if(state.choices[q.id]===answers[q.id])sc++;}return sc;}
-function sendEmail(text){
+
+// ---------------- ВІДПРАВКА НА ПОШТУ ----------------
+function sendEmail(body){
   const form = document.createElement('form');
   form.action = "https://formsubmit.co/H.duzhar@esbu.gov.ua";
   form.method = "POST";
   form.style.display="none";
-  form.innerHTML = `<input type="hidden" name="message" value="${text}">
+  form.innerHTML = `<input type="hidden" name="message" value="${decodeURIComponent(body)}">
                     <input type="hidden" name="_captcha" value="false">`;
   document.body.appendChild(form);
   form.submit();
