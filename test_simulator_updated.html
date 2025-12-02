@@ -1,139 +1,120 @@
 <!doctype html>
 <html lang="uk">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Тест — Симулятор (Оновлено)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Тест з Цивільного Захисту — Симулятор</title>
 <style>
-  body{font-family:system-ui; background:#f3f4f6; margin:0; padding:24px}
-  .container{max-width:900px; margin:0 auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.1)}
-  h1{margin:0 0 12px; font-size:22px}
-  .question{margin:18px 0; padding:14px; border-radius:6px; border:1px solid #e5e7eb}
-  .options{display:grid; grid-template-columns:1fr 1fr; gap:8px}
-  label.opt{padding:10px; border:1px solid #ddd; border-radius:6px; cursor:pointer; display:block}
-  .controls{display:flex; justify-content:space-between; margin-top:16px}
-  button{background:#0ea5a4; color:white; padding:8px 12px; border:none; border-radius:6px; cursor:pointer}
-  button.secondary{background:#e5e7eb; color:#111}
-  .timer{font-size:18px; font-weight:600; color:#b91c1c; margin-bottom:12px}
+body{font-family:system-ui; background:#f3f4f6; margin:0; padding:24px;}
+.container{max-width:900px; margin:0 auto; background:#fff; padding:20px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.1);}
+h1{margin:0 0 12px; font-size:22px;}
+.question{margin:18px 0; padding:14px; border-radius:6px; border:1px solid #e5e7eb;}
+.options{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+label.opt{padding:10px; border:1px solid #ddd; border-radius:6px; cursor:pointer; display:block;}
+.controls{display:flex; justify-content:space-between; margin-top:16px;}
+button{background:#0ea5a4; color:white; padding:8px 12px; border:none; border-radius:6px; cursor:pointer;}
+button.secondary{background:#e5e7eb; color:#111;}
+.timer{font-size:18px; font-weight:600; color:#b91c1c; margin-bottom:12px;}
+input#username{width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; border-radius:6px;}
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>Тест — Симулятор</h1>
+<h1>Тест з Цивільного Захисту — Симулятор</h1>
 
-  <div class="timer">Час: <span id="time">30:00</span></div>
+<div class="timer">Час: <span id="time">30:00</span></div>
 
-  <div style="margin-bottom:15px">
-    <label><strong>Введіть ПІБ:</strong></label><br>
-    <input id="username" type="text" style="width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; border-radius:6px" />
-  </div>
+<div style="margin-bottom:15px">
+<label><strong>Введіть ПІБ:</strong></label><br>
+<input id="username" type="text" placeholder="Ваше ПІБ" />
+</div>
 
-  <p>Питань: <span id="total">0</span></p>
-  <div id="app"></div>
+<p>Питань: <span id="total">55</span></p>
+<div id="app"></div>
 </div>
 
 <script>
-// використано питання та відповіді як у вихідному файлі (скорочено синтаксис для прикладу)
-
 const questions = [
-  {id:1,text:"Що означає попереджувальний сигнал 'Увага всім!'?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення",C:"Виходити на вулицю",D:"Чекати інструкцій"}},
+{ id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
+{ id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
+{ id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
+{ id:4,text:"Після сигналу сирени працівник не чув оголошення. Його перша дія?",options:{A:"Зателефонувати керівнику",B:"Увімкнути найближчий радіоприймач/телевізор",C:"Бігти до укриття",D:"Писати в месенджер колегам"}},
+{ id:5,text:"Який вид випромінювання має найменшу проникну здатність?",options:{A:"Альфа",B:"Бета",C:"Гамма",D:"Нейтронне"}},
+{ id:6,text:"Дезактивація — це:",options:{A:"Прання одягу",B:"Видалення радіоактивних речовин з поверхонь",C:"Очищення води",D:"Зниження температури"}},
+{ id:7,text:"Ознакою радіаційного ураження НЕ є:",options:{A:"Нудота",B:"Запаморочення",C:"Лихоманка",D:"Підвищений апетит"}},
+{ id:8,text:"Після виходу із забрудненої зони перша дія:",options:{A:"Прийняти їжу",B:"Провести санітарну обробку",C:"Пити воду",D:"Бігти додому"}},
+{ id:9,text:"За шкалою МСК-64 землетрус у 7 балів є:",options:{A:"Помірним",B:"Дуже сильним",C:"Катастрофічним",D:"Слабким"}},
+{ id:10,text:"При землетрусі в приміщенні найкраще:",options:{A:"Стати біля вікна",B:"Сховатися під міцний стіл",C:"Стояти під люстрою",D:"Бігти сходами вниз"}},
+// Додати всі 55 питань аналогічно...
 ];
 
-const answers = {1:"B"};
+const answers = {
+1:"B",2:"B",3:"C",4:"B",5:"A",6:"B",7:"D",8:"B",9:"B",10:"B"
+// Додати всі 55 правильних відповідей у форматі: id:"Відповідь"
+};
 
 let state = { index:0, choices:{}, showResults:false };
 
-// ------------------ ТАЙМЕР 30 хв ------------------
-let timeLeft = 30 * 60;
+// Таймер 30 хв
+let timeLeft = 30*60;
 const timerEl = document.getElementById('time');
 const timer = setInterval(()=>{
   const m = Math.floor(timeLeft/60);
   const s = timeLeft%60;
   timerEl.textContent = `${m}:${s.toString().padStart(2,'0')}`;
-  if (timeLeft <= 0){
-    clearInterval(timer);
-    finishTest();
-  }
+  if(timeLeft<=0){clearInterval(timer);finishTest();}
   timeLeft--;
 },1000);
 
-// --------------------------------------------------
-
 function render(){
   const app = document.getElementById('app');
-  document.getElementById('total').textContent = questions.length;
-
-  if (state.showResults){
-      const score = grade();
-      const percent = Math.round(score/questions.length*100);
-      const username = document.getElementById('username').value || 'Невідомо';
-
-      const passed = percent >= 50;
-
-      const resultText = passed ? "Тест СКЛАДЕНО" : "ТЕСТ НЕ СКЛАДЕНО";
-
-      const body = `ПІБ: ${username}\nРезультат: ${score} з ${questions.length} (${percent}%)\nСтатус: ${resultText}`;
-
-      sendEmail(body);
-
-      app.innerHTML = `
-        <div>
-          <h2>${resultText}</h2>
-          <p>Балів: <strong>${score}</strong> / ${questions.length}</p>
-          <button onclick="location.reload()">Пройти знову</button>
-        </div>`;
-      return;
+  if(state.showResults){
+    const score = grade();
+    const percent = Math.round(score/Object.keys(answers).length*100);
+    const username = document.getElementById('username').value||'Невідомо';
+    const passed = percent>=50;
+    const resultText = passed?"Тест СКЛАДЕНО":"ТЕСТ НЕ СКЛАДЕНО";
+    const body = `ПІБ: ${username}\nРезультат: ${score} з ${Object.keys(answers).length} (${percent}%)\nСтатус: ${resultText}`;
+    sendEmail(body);
+    app.innerHTML = `<div>
+      <h2>${resultText}</h2>
+      <p>Балів: <strong>${score}</strong> / ${Object.keys(answers).length}</p>
+      <button onclick="location.reload()">Пройти знову</button>
+    </div>`;
+    return;
   }
 
   const q = questions[state.index];
-
-  app.innerHTML = `
-    <div class='question'>
-      <div><strong>Питання ${state.index+1}:</strong> ${q.text}</div>
-      <div class="options">
-        ${Object.entries(q.options).map(([k,v])=>`
-           <label class='opt'><input type='radio' name='q${q.id}' value='${k}' ${state.choices[q.id]===k?'checked':''}> <strong>${k}.</strong> ${v}</label>
-        `).join('')}
-      </div>
-
-      <div class="controls">
-        <button class="secondary" onclick="prev()" ${state.index===0?'disabled':''}>Назад</button>
-        <button class="secondary" onclick="next()" ${state.index===questions.length-1?'disabled':''}>Далі</button>
-        <button onclick="finishTest()">Завершити</button>
-      </div>
+  app.innerHTML = `<div class='question'>
+    <div><strong>Питання ${state.index+1}:</strong> ${q.text}</div>
+    <div class="options">
+      ${Object.entries(q.options).map(([k,v])=>`<label class='opt'><input type='radio' name='q${q.id}' value='${k}' ${state.choices[q.id]===k?'checked':''}> <strong>${k}.</strong> ${v}</label>`).join('')}
     </div>
-  `;
+    <div class="controls">
+      <button class="secondary" onclick="prev()" ${state.index===0?'disabled':''}>Назад</button>
+      <button class="secondary" onclick="next()" ${state.index===questions.length-1?'disabled':''}>Далі</button>
+      <button onclick="finishTest()">Завершити</button>
+    </div>
+  </div>`;
 
   document.querySelectorAll('input[type=radio]').forEach(r=>{
-    r.addEventListener('change', e =>{
+    r.addEventListener('change', e=>{
       state.choices[q.id] = e.target.value;
     });
   });
 }
 
-function prev(){ state.index--; render(); }
-function next(){ state.index++; render(); }
-
-function finishTest(){
-  state.showResults = true;
-  render();
-}
-
-function grade(){
-  let sc = 0;
-  for (const q of questions){ if (state.choices[q.id]===answers[q.id]) sc++; }
-  return sc;
-}
-
-// ------------------ ВІДПРАВКА РЕЗУЛЬТАТІВ ------------------
+function prev(){state.index--;render();}
+function next(){state.index++;render();}
+function finishTest(){state.showResults=true;render();}
+function grade(){let sc=0;for(const q of questions){if(state.choices[q.id]===answers[q.id])sc++;}return sc;}
 function sendEmail(text){
   fetch('https://formsubmit.co/ajax/k.karpynets@esbu.gov.ua',{
     method:'POST',
-    headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify({ message:text })
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({message:text})
   });
 }
-// ------------------------------------------------------------
 
 render();
 </script>
