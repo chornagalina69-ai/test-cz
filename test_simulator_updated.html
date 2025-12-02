@@ -109,7 +109,7 @@ function next(){state.index++;render();}
 function finishTest(){state.showResults=true;render();}
 function grade(){let sc=0;for(const q of questions){if(state.choices[q.id]===answers[q.id])sc++;}return sc;}
 function sendEmail(text){
-  fetch('https://formsubmit.co/ajax/k.karpynets@esbu.gov.ua',{
+  fetch('https://formsubmit.co/ajax/h.duxhar@esbu.gov.ua',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({message:text})
