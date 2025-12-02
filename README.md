@@ -29,19 +29,13 @@ input#username{width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; b
 <input id="username" type="text" placeholder="Ваше ПІБ" />
 </div>
 
-<p>Питань: <span id="total">20</span></p>
+<p>Питань: <span id="total">55</span></p>
 <div id="app"></div>
-
-<form id="emailForm" action="https://formsubmit.co/H.duzhar@esbu.gov.ua" method="POST" style="display:none;">
-  <input type="hidden" name="message" id="emailMessage">
-  <input type="hidden" name="_captcha" value="false">
-</form>
-
 </div>
 
 <script>
-// -------- ПИТАННЯ --------
-const allQuestions = [
+// ---------------- ПИТАННЯ ----------------
+const questions = [
 { id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
 { id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
 { id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
@@ -91,95 +85,93 @@ const allQuestions = [
 { id:47,text:"Які дії працівника при отриманні сигналу щодо аварійної зупинки виробництва?",options:{A:"Завершити особисті справи",B:"Негайно виконати дії своїх інструкцій і відключити обладнання",C:"Зачекати додаткових вказівок у чаті колег",D:"Самостійно змінити маршрут евакуації"}},
 { id:48,text:"Що робить персонал після аварійної зупинки обладнання згідно з планом реагування?",options:{A:"Повертається до роботи",B:"Залишається на місці, чекаючи дозволу",C:"Негайно залишає небезпечну зону за встановленими шляхами",D:"Перевіряє документацію"}},
 { id:49,text:"Сталася аварія з загрозою небезпечних факторів. Об’єктова система оповіщення подала сигнал. Яка дія правильна?",options:{A:"Вимкнути звук та продовжувати роботу",B:"Виконати інструкції маршруту евакуації",C:"Збирати речі та чекати колег",D:"Вийти до парковки шукати керівника"}},
-{ id:50,text:"Яке основне завдання аварійної зупинки виробництва?",options:{A:"Мінімізувати час простою",B:"Запобігти розвитку небезпечних факторів",C:"Зменшити витрати матеріалів",D:"Підготувати звіт"}},
-{ id:51,text:"Що робити у разі пошкодження хімічного резервуару?",options:{A:"Ігнорувати і повідомити через тиждень",B:"Негайно евакуюватися та повідомити службу ЦЗ",C:"Продовжити роботу, якщо немає запаху",D:"Викликати таксі")},
-{ id:52,text:"Як діяти при тривозі у нічний час?",options:{A:"Поспати далі",B:"Одягнути захисний одяг та приготуватися до евакуації",C:"Вийти на вулицю без захисту",D:"Продовжити роботу")},
-{ id:53,text:"Хто відповідає за організацію евакуації працівників?",options:{A:"Відділ маркетингу",B:"Керівник об’єкта/підприємства",C:"Рятувальники",D:"Медперсонал"}},
-{ id:54,text:"Що потрібно робити після сигналу «Увага всім!»?",options:{A:"Очікувати на додаткові вказівки та дотримуватись інструкцій",B:"Ігнорувати сигнал",C:"Продовжити роботу",D:"Залишити будівлю без перевірки"}),
-{ id:55,text:"Під час аварії на підприємстві, перша дія працівника:",options:{A:"Зателефонувати колегам",B:"Негайно виконати план реагування на НС",C:"Закрити вікна",D:"Продовжити роботу"}}
+{ id:50,text:"Яке основне завдання аварійної зупинки виробництва?",options:{A:"Мінімізувати час простою",B:"Запобігти розвитку небезпечних факторів",C:"Зменшити витрати матеріалів",D:"Підготувати систему до ремонту"}},
+{ id:51,text:"Як забезпечуються працівники засобами індивідуального захисту згідно з планом реагування?",options:{A:"За бажанням кожного",B:"Видача ЗІЗ відбувається до початку роботи або під час загрози",C:"Лише після НС",D:"ЗІЗ видаються тільки керівному складу"}},
+{ id:52,text:"Який порядок дій при витоку газу у виробничому приміщенні?",options:{A:"Відкрити всі вікна і двері",B:"Зачинити вентилятор, герметизувати приміщення, сповістити керівництво",C:"Продовжити роботу",D:"Викликати друзів на допомогу"}},
+{ id:53,text:"Що відноситься до основних заходів безпеки під час евакуації?",options:{A:"Панікувати та штовхатися",B:"Дотримуватись маршруту, не бігти, уникати натовпу",C:"Йти назад, якщо багато людей",D:"Використовувати ліфт у будь-якому випадку"}},
+{ id:54,text:"При хімічній аварії на вулиці важливо:",options:{A:"Залишатися на місці",B:"Переміщатися проти вітру у безпечну зону",C:"Йти на дах будинку",D:"Пити багато води"}},
+{ id:55,text:"Основна мета цивільного захисту:",options:{A:"Забезпечення безпеки населення та зменшення наслідків НС",B:"Контроль за робочим графіком",C:"Проведення нарад",D:"Облік майна"}}
 ];
 
-// -------- СТАН --------
-let state = {
-  index:0,
-  choices:{},
-  showResults:false,
-  currentTest: []
+// ---------------- ВІДПОВІДІ ----------------
+const answers = {
+1:"B",2:"B",3:"C",4:"B",5:"A",6:"B",7:"D",8:"B",9:"B",10:"B",
+11:"B",12:"B",13:"C",14:"A",15:"C",16:"B",17:"B",18:"A",19:"B",20:"C",
+21:"D",22:"B",23:"A",24:"B",25:"B",26:"C",27:"B",28:"A",29:"B",30:"B",
+31:"B",32:"B",33:"B",34:"B",35:"A",36:"C",37:"B",38:"B",39:"B",40:"B",
+41:"B",42:"B",43:"B",44:"B",45:"B",46:"B",47:"B",48:"C",49:"B",50:"B",
+51:"B",52:"B",53:"B",54:"B",55:"A"
 };
 
-// -------- ФУНКЦІЇ --------
-function shuffleArray(array){return array.sort(()=>Math.random()-0.5);}
-function renderStart(){
-  const app = document.getElementById('app');
-  app.innerHTML = `<div>
-    <button onclick="startTest()">Розпочати тест</button>
-  </div>`;
-}
-function startTest(){
-  const username = document.getElementById('username').value.trim();
-  if(!username){alert("Введіть ПІБ перед початком тесту!"); return;}
-  state.index=0; state.choices={}; state.showResults=false;
-  state.currentTest = shuffleArray([...allQuestions]).slice(0,20);
-  render();
-}
+// ---------------- СТАН ТЕСТУ ----------------
+let state = { index:0, choices:{}, showResults:false };
+
+// Таймер 30 хв
+let timeLeft = 30*60;
+const timerEl = document.getElementById('time');
+const timer = setInterval(()=>{
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft%60;
+  timerEl.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  if(timeLeft<=0){clearInterval(timer);finishTest();}
+  timeLeft--;
+},1000);
+
+// ---------------- РЕНДЕР ----------------
 function render(){
-  const app=document.getElementById('app');
+  const app = document.getElementById('app');
   if(state.showResults){
-    let score=0;
-    state.currentTest.forEach(q=>{
-      if(state.choices[q.id]==="A") score++;
-    });
-    app.innerHTML = `<h2>Результат: ${score} з ${state.currentTest.length}</h2>
-      <button onclick="sendResults()">Відправити результати на пошту</button>`;
+    const score = grade();
+    const percent = Math.round(score/Object.keys(answers).length*100);
+    const username = document.getElementById('username').value||'Невідомо';
+    const passed = percent>=50;
+    const resultText = passed?"Тест СКЛАДЕНО":"ТЕСТ НЕ СКЛАДЕНО";
+    const body = `ПІБ: ${username}\nРезультат: ${score} з ${Object.keys(answers).length} (${percent}%)\nСтатус: ${resultText}`;
+    sendEmail(body);
+    app.innerHTML = `<div>
+      <h2>${resultText}</h2>
+      <p>Балів: <strong>${score}</strong> / ${Object.keys(answers).length}</p>
+      <button onclick="location.reload()">Пройти знову</button>
+    </div>`;
     return;
   }
-  const q=state.currentTest[state.index];
-  app.innerHTML = `<div class="question">
-    <strong>Питання ${state.index+1}:</strong> ${q.text}
+
+  const q = questions[state.index];
+  app.innerHTML = `<div class='question'>
+    <div><strong>Питання ${state.index+1}:</strong> ${q.text}</div>
     <div class="options">
-      ${Object.entries(q.options).map(([k,v])=>
-        `<label class="opt"><input type="radio" name="q${q.id}" value="${k}" 
-          ${state.choices[q.id]===k?"checked":""}> ${k}. ${v}</label>`).join('')}
+      ${Object.entries(q.options).map(([k,v])=>`<label class='opt'><input type='radio' name='q${q.id}' value='${k}' ${state.choices[q.id]===k?'checked':''}> <strong>${k}.</strong> ${v}</label>`).join('')}
     </div>
-  </div>
-  <div class="controls">
-    <button class="secondary" onclick="prev()">Назад</button>
-    ${state.index<state.currentTest.length-1?
-      `<button onclick="next()">Далі</button>`:
-      `<button onclick="finish()">Завершити</button>`}
+    <div class="controls">
+      <button class="secondary" onclick="prev()" ${state.index===0?'disabled':''}>Назад</button>
+      <button class="secondary" onclick="next()" ${state.index===questions.length-1?'disabled':''}>Далі</button>
+      <button onclick="finishTest()">Завершити</button>
+    </div>
   </div>`;
-}
-function next(){
-  saveChoice();
-  if(state.index<state.currentTest.length-1){state.index++; render();}
-}
-function prev(){
-  saveChoice();
-  if(state.index>0){state.index--; render();}
-}
-function saveChoice(){
-  const q=state.currentTest[state.index];
-  const selected = document.querySelector(`input[name="q${q.id}"]:checked`);
-  if(selected) state.choices[q.id] = selected.value;
-}
-function finish(){
-  saveChoice();
-  state.showResults=true;
-  render();
-}
-function sendResults(){
-  const username=document.getElementById('username').value.trim();
-  let score=0;
-  state.currentTest.forEach(q=>{
-    if(state.choices[q.id]==="A") score++;
+
+  document.querySelectorAll('input[type=radio]').forEach(r=>{
+    r.addEventListener('change', e=>{
+      state.choices[q.id] = e.target.value;
+    });
   });
-  const message=`${username} пройшов тест. Результат: ${score} з ${state.currentTest.length}`;
-  document.getElementById('emailMessage').value=message;
-  document.getElementById('emailForm').submit();
 }
 
-// -------- ПОЧАТОК --------
-renderStart();
+function prev(){state.index--;render();}
+function next(){state.index++;render();}
+function finishTest(){state.showResults=true;render();}
+function grade(){let sc=0;for(const q of questions){if(state.choices[q.id]===answers[q.id])sc++;}return sc;}
+function sendEmail(text){
+  const form = document.createElement('form');
+  form.action = "https://formsubmit.co/H.duzhar@esbu.gov.ua";
+  form.method = "POST";
+  form.style.display="none";
+  form.innerHTML = `<input type="hidden" name="message" value="${text}">
+                    <input type="hidden" name="_captcha" value="false">`;
+  document.body.appendChild(form);
+  form.submit();
+}
+
+render();
 </script>
 </body>
 </html>
