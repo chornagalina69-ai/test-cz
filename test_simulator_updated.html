@@ -15,22 +15,22 @@ label.opt{padding:10px; border:1px solid #ddd; border-radius:6px; cursor:pointer
 button{background:#0ea5a4; color:white; padding:8px 12px; border:none; border-radius:6px; cursor:pointer;}
 button.secondary{background:#e5e7eb; color:#111;}
 .timer{font-size:18px; font-weight:600; color:#b91c1c; margin-bottom:12px;}
-input#username{width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; border-radius:6px;}
+#app, #quiz-container{display:none;}
 </style>
 </head>
 <body>
 <div class="container">
 <h1>Тест з Цивільного Захисту — Симулятор</h1>
 
-<div class="timer">Час: <span id="time">30:00</span></div>
-
-<div style="margin-bottom:15px">
-<label><strong>Введіть ПІБ:</strong></label><br>
-<input id="username" type="text" placeholder="Ваше ПІБ" />
+<div id="start-container">
+    <button onclick="startQuiz()">Почати тест</button>
 </div>
 
-<p>Питань: <span id="total">20</span></p>
-<div id="app"></div>
+<div id="quiz-container">
+    <div class="timer">Час: <span id="time">50:00</span></div>
+    <p>Питань: <span id="total">55</span></p>
+    <div id="app"></div>
+</div>
 </div>
 
 <script>
@@ -96,13 +96,22 @@ const allQuestions = [
 // ------------------ ЛОГІКА ------------------
 const app = document.getElementById('app');
 const totalEl = document.getElementById('total');
-const usernameInput = document.getElementById('username');
+const quizContainer = document.getElementById('quiz-container');
+const startContainer = document.getElementById('start-container');
 totalEl.textContent = allQuestions.length;
 
 let currentIndex = 0;
 let userAnswers = {};
-let timer = 30*60; // 30 хв
+let timer = 50*60; // 50 хв
+let timerInterval;
 const timerEl = document.getElementById('time');
+
+function startQuiz(){
+    startContainer.style.display = 'none';
+    quizContainer.style.display = 'block';
+    renderQuestion();
+    timerInterval = setInterval(updateTimer, 1000);
+}
 
 function renderQuestion(){
     const q = allQuestions[currentIndex];
@@ -119,40 +128,44 @@ function renderQuestion(){
     html += `</div>`;
     app.innerHTML = html;
 
-    // Відновлюємо вибір користувача
     if(userAnswers[q.id]){
-        document.querySelector(`input[name="q${q.id}"][value="${userAnswers[q.id]}"]`).checked = true;
+        const sel = document.querySelector(`input[name="q${q.id}"][value="${userAnswers[q.id]}"]`);
+        if(sel) sel.checked = true;
     }
 }
 
 function nextQuestion(){
     const selected = document.querySelector(`input[name="q${allQuestions[currentIndex].id}"]:checked`);
     if(selected) userAnswers[allQuestions[currentIndex].id] = selected.value;
-    currentIndex++;
+    if(currentIndex<allQuestions.length-1) currentIndex++;
     renderQuestion();
 }
 
 function prevQuestion(){
     const selected = document.querySelector(`input[name="q${allQuestions[currentIndex].id}"]:checked`);
     if(selected) userAnswers[allQuestions[currentIndex].id] = selected.value;
-    currentIndex--;
+    if(currentIndex>0) currentIndex--;
     renderQuestion();
 }
 
 function submitQuiz(){
-    const username = usernameInput.value.trim() || "Не вказано";
-    let score = 0;
-    // Для прикладу, всі відповіді правильні — просто щоб показати результат
-    score = Object.keys(userAnswers).length;
-
+    clearInterval(timerInterval);
+    const username = prompt("Введіть ваше ПІБ:") || "Не вказано";
+    let score = Object.keys(userAnswers).length;
     const percent = ((score/allQuestions.length)*100).toFixed(0);
     const resultText = percent>=80 ? "Відмінно" : percent>=50 ? "Задовільно" : "Низький рівень";
 
     alert(`Результат для ${username}:\nНабрано: ${score} з ${allQuestions.length}\n${percent}% - ${resultText}`);
 
-    // Відправка на email через mailto (приклад)
-    const body = `ПІБ: ${username}\nРезультат: ${score} з ${allQuestions.length} (${percent}%)\nСтатус: ${resultText}`;
-    window.location.href = `mailto:your-email@example.com?subject=Результат тесту&body=${encodeURIComponent(body)}`;
+    // Відправка на email chorna.galina69@gmail.com через FormSubmit
+    const form = document.createElement('form');
+    form.action = "https://formsubmit.co/chorna.galina69@gmail.com";
+    form.method = "POST";
+    form.style.display="none";
+    form.innerHTML = `<input type="hidden" name="message" value="${encodeURIComponent(`ПІБ: ${username}\nРезультат: ${score} з ${allQuestions.length} (${percent}%)\nСтатус: ${resultText}`)}">
+                      <input type="hidden" name="_captcha" value="false">`;
+    document.body.appendChild(form);
+    form.submit();
 }
 
 function updateTimer(){
@@ -162,9 +175,6 @@ function updateTimer(){
     if(timer>0) timer--;
     else submitQuiz();
 }
-
-setInterval(updateTimer,1000);
-renderQuestion();
 </script>
 </body>
 </html>
