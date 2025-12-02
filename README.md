@@ -16,6 +16,7 @@ button{background:#0ea5a4;color:white;padding:8px 12px;border:none;border-radius
 button.secondary{background:#e5e7eb;color:#111;}
 .timer{font-size:18px;font-weight:600;color:#b91c1c;margin-bottom:12px;}
 input[type=text]{padding:8px;width:100%;margin-top:4px;border-radius:6px;border:1px solid #ccc;}
+button:disabled{opacity:0.5;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -25,25 +26,24 @@ input[type=text]{padding:8px;width:100%;margin-top:4px;border-radius:6px;border:
 <div id="loginDiv">
   <label><strong>Введіть ПІБ:</strong></label><br>
   <input id="username" type="text" placeholder="Ваше ПІБ" />
-  <button id="startTest" style="margin-top:12px;">Розпочати тест</button>
+  <button id="startTest" disabled style="margin-top:12px;">Розпочати тест</button>
 </div>
 
 <div id="testDiv" style="display:none;">
   <div class="timer">Час: <span id="time">30:00</span></div>
-  <p>Питань: <span id="total">55</span></p>
+  <p>Питань: <span id="total">0</span></p>
   <div id="app"></div>
 </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
 <script>
-// ---------------- ПИТАННЯ ----------------
+// --- Усі питання та відповіді ---
 const allQuestions = [
-  {id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
-  {id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
-  {id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
-  { id:4,text:"Після сигналу сирени працівник не чув оголошення. Його перша дія?",options:{A:"Зателефонувати керівнику",B:"Увімкнути найближчий радіоприймач/телевізор",C:"Бігти до укриття",D:"Писати в месенджер колегам"}},
+{ id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
+{ id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
+{ id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
+{ id:4,text:"Після сигналу сирени працівник не чув оголошення. Його перша дія?",options:{A:"Зателефонувати керівнику",B:"Увімкнути найближчий радіоприймач/телевізор",C:"Бігти до укриття",D:"Писати в месенджер колегам"}},
 { id:5,text:"Який вид випромінювання має найменшу проникну здатність?",options:{A:"Альфа",B:"Бета",C:"Гамма",D:"Нейтронне"}},
 { id:6,text:"Дезактивація — це:",options:{A:"Прання одягу",B:"Видалення радіоактивних речовин з поверхонь",C:"Очищення води",D:"Зниження температури"}},
 { id:7,text:"Ознакою радіаційного ураження НЕ є:",options:{A:"Нудота",B:"Запаморочення",C:"Лихоманка",D:"Підвищений апетит"}},
@@ -94,74 +94,54 @@ const allQuestions = [
 { id:52,text:"Як діяти при тривозі у нічний час?",options:{A:"Поспати далі",B:"Одягнути захисний одяг та приготуватися до евакуації",C:"Вийти на вулицю без захисту",D:"Продовжити роботу")},
 { id:53,text:"Хто відповідає за організацію евакуації працівників?",options:{A:"Відділ маркетингу",B:"Керівник об’єкта/підприємства",C:"Рятувальники",D:"Медперсонал"}},
 { id:54,text:"Що потрібно робити після сигналу «Увага всім!»?",options:{A:"Очікувати на додаткові вказівки та дотримуватись інструкцій",B:"Ігнорувати сигнал",C:"Продовжити роботу",D:"Залишити будівлю без перевірки"}),
-{id:55,text:"Під час аварії на підприємстві, перша дія працівника:",options:{A:"Зателефонувати колегам",B:"Негайно виконати план реагування на НС",C:"Закрити вікна",D:"Продовжити роботу"}}
+{ id:55,text:"Під час аварії на підприємстві, перша дія працівника:",options:{A:"Зателефонувати колегам",B:"Негайно виконати план реагування на НС",C:"Закрити вікна",D:"Продовжити роботу"}}
 ];
 
-// ----- ВІДПОВІДІ -----
 const answers = {
 1:"B",2:"B",3:"C",4:"B",5:"A",6:"B",7:"D",8:"B",9:"B",10:"B",
 11:"B",12:"B",13:"C",14:"A",15:"C",16:"B",17:"B",18:"A",19:"B",20:"C",
 21:"D",22:"B",23:"A",24:"B",25:"B",26:"C",27:"B",28:"A",29:"B",30:"B",
 31:"B",32:"B",33:"B",34:"B",35:"A",36:"C",37:"B",38:"B",39:"B",40:"B",
 41:"B",42:"B",43:"B",44:"B",45:"B",46:"B",47:"B",48:"C",49:"B",50:"B",
-51:"B",52:"B",53:"B",54:"B",55:"B"
+51:"B",52:"B",53:"B",54:"B",55:"A"
 };
 
-// ----- СТАН ТЕСТУ -----
+// --- Стан тесту ---
 let state = { index:0, choices:{}, showResults:false };
 let testQuestions = [];
-
-// ----- РОЗПОЧАТИ ТЕСТ -----
-document.getElementById('startTest').addEventListener('click',()=>{
-  const username = document.getElementById('username').value.trim();
-  if(!username){ 
-    alert("Будь ласка, введіть ПІБ"); 
-    return; 
-  }
-
-  document.getElementById('loginDiv').style.display='none';
-  document.getElementById('testDiv').style.display='block';
-  testQuestions = allQuestions;
-  render();
-  startTimer();
-});
-
-// ----- ТАЙМЕР -----
 let timeLeft = 30*60;
 let timerInterval;
-function startTimer(){
-  const timerEl = document.getElementById('time');
-  timerInterval = setInterval(()=>{
-    const m=Math.floor(timeLeft/60), s=timeLeft%60;
-    timerEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;
-    if(timeLeft<=0){clearInterval(timerInterval); finishTest();}
-    timeLeft--;
-  },1000);
+
+// --- Функції глобально ---
+window.prev = function(){ state.index--; render(); }
+window.next = function(){ state.index++; render(); }
+window.finishTest = function(){ state.showResults=true; render(); }
+
+function grade(){
+  let sc=0;
+  for(const q of testQuestions){ if(state.choices[q.id]===answers[q.id]) sc++; }
+  return sc;
 }
 
-// ----- РЕНДЕР -----
+// --- Рендер ---
 function render(){
   const app = document.getElementById('app');
-  
-if(state.showResults){
+  if(state.showResults){
     clearInterval(timerInterval);
     const score = grade();
     const percent = Math.round(score/testQuestions.length*100);
-    const username = document.getElementById('username').value;
+    const username = document.getElementById('username').value.trim();
     const passed = percent>=50;
-    const resultText = passed?"Тест СКЛАДЕНО ВІТАЄМО Надішліть результати":"ТЕСТ НЕ СКЛАДЕНО";
+    const resultText = passed?"Тест СКЛАДЕНО ВІТАЄМО":"ТЕСТ НЕ СКЛАДЕНО";
 
     app.innerHTML = `<div>
       <h2>${resultText}</h2>
       <p>Балів: <strong>${score}</strong> / ${testQuestions.length}</p>
       <button onclick="location.reload()">Пройти знову</button>
     </div>`;
-
-    // --- ДОДАНО: автоматична генерація PDF ---
     generatePDF(username, score, testQuestions.length);
-
     return;
-}
+  }
 
   const q = testQuestions[state.index];
   app.innerHTML = `<div class='question'>
@@ -181,12 +161,18 @@ if(state.showResults){
   });
 }
 
-function prev(){state.index--;render();}
-function next(){state.index++;render();}
-function finishTest(){state.showResults=true;render();}
-function grade(){let sc=0;for(const q of testQuestions){if(state.choices[q.id]===answers[q.id])sc++;}return sc;}
+// --- Таймер ---
+function startTimer(){
+  const timerEl = document.getElementById('time');
+  timerInterval = setInterval(()=>{
+    const m=Math.floor(timeLeft/60), s=timeLeft%60;
+    timerEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    if(timeLeft<=0){ clearInterval(timerInterval); finishTest(); }
+    timeLeft--;
+  },1000);
+}
 
-// ----- ГЕНЕРАЦІЯ PDF -----
+// --- PDF ---
 function generatePDF(username, score, total){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
@@ -200,6 +186,22 @@ function generatePDF(username, score, total){
   doc.text(`Результат: ${resultText}`, 20, 65);
   doc.save(`Результат_${username.replaceAll(' ','_')}.pdf`);
 }
+
+// --- Події ---
+const startBtn = document.getElementById('startTest');
+const usernameInput = document.getElementById('username');
+
+usernameInput.addEventListener('input', ()=>{ startBtn.disabled = usernameInput.value.trim()===''; });
+
+startBtn.addEventListener('click', ()=>{
+  if(usernameInput.value.trim()==='') return;
+  document.getElementById('loginDiv').style.display='none';
+  document.getElementById('testDiv').style.display='block';
+  testQuestions = allQuestions;
+  document.getElementById('total').textContent = testQuestions.length;
+  render();
+  startTimer();
+});
 </script>
 </body>
 </html>
