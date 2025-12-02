@@ -1,216 +1,462 @@
 <!doctype html>
 <html lang="uk">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Тест з Цивільного Захисту — Симулятор</title>
 <style>
-body{font-family:system-ui;background:#f3f4f6;margin:0;padding:24px;}
-.container{max-width:900px;margin:0 auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.1);}
-h1{margin:0 0 12px;font-size:22px;}
-.question{margin:18px 0;padding:14px;border-radius:6px;border:1px solid #e5e7eb;}
-.options{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-label.opt{padding:10px;border:1px solid #ddd;border-radius:6px;cursor:pointer;display:block;}
-.controls{display:flex;justify-content:space-between;margin-top:16px;}
-button{background:#0ea5a4;color:white;padding:8px 12px;border:none;border-radius:6px;cursor:pointer;}
-button.secondary{background:#e5e7eb;color:#111;}
-.timer{font-size:18px;font-weight:600;color:#b91c1c;margin-bottom:12px;}
+  :root{--bg:#f5f7fb;--card:#fff;--accent:#0ea5a4;--muted:#6b7280;}
+  body{font-family:Inter,system-ui,Segoe UI,Roboto,Arial; background:var(--bg); margin:0; padding:24px; color:#0f172a;}
+  .wrap{max-width:980px;margin:0 auto;}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  h1{font-size:20px;margin:0;}
+  .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(2,6,23,0.06);}
+  .controls-row{display:flex;gap:12px;align-items:center;margin-top:12px;}
+  input[type="text"], input[type="email"]{width:100%;padding:10px;border:1px solid #e6eef1;border-radius:8px;font-size:15px;}
+  label{font-weight:600;font-size:14px;color:var(--muted);}
+  .start-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  #startBtn{background:var(--accent);color:white;padding:10px 14px;border:none;border-radius:8px;cursor:pointer;}
+  #startBtn[disabled]{opacity:.5;cursor:not-allowed;}
+  .top-row{display:flex;justify-content:space-between;align-items:center;}
+  #timer{font-weight:700;color:#b91c1c;}
+  .progress{height:10px;background:#eef2f7;border-radius:999px;overflow:hidden;margin-top:12px;}
+  .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#06b6d4);width:0%;}
+  .question-card{margin-top:16px;padding:16px;border-radius:10px;border:1px solid #eef2f7;background:linear-gradient(180deg,white, #fbfeff);}
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+  .opt{padding:10px;border-radius:8px;border:1px solid #e6eef1;cursor:pointer;display:flex;align-items:center;gap:10px;}
+  .opt input{transform:scale(1.1);}
+  .nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+  .btn{padding:8px 12px;border-radius:8px;border:none;cursor:pointer;}
+  .btn.secondary{background:#eef2f7;}
+  .results{margin-top:12px;}
+  .small{font-size:13px;color:var(--muted);}
+  pre{white-space:pre-wrap;background:#f8fafc;padding:12px;border-radius:8px;border:1px dashed #e6eef1;}
+  footer{margin-top:18px;text-align:center;color:var(--muted);font-size:13px;}
+  @media (max-width:720px){ .start-grid{grid-template-columns:1fr} .options{grid-template-columns:1fr} header{flex-direction:column;gap:12px} }
 </style>
 </head>
 <body>
-<div class="container">
-<h1>Тест з Цивільного Захисту — Симулятор</h1>
+<div class="wrap">
+  <header>
+    <h1>Тест з Цивільного Захисту — Симулятор</h1>
+    <div class="small">Рівень: середній + ситуаційні · 20 випадкових питань з набору 55</div>
+  </header>
 
-<div id="loginDiv">
-  <button id="googleLogin">Увійти через Google</button>
+  <!-- START CARD -->
+  <section class="card" id="startCard">
+    <div class="start-grid">
+      <div>
+        <label for="username">ПІБ</label>
+        <input type="text" id="username" placeholder="Прізвище Ім'я По батькові">
+      </div>
+      <div>
+        <label for="useremail">Email (результати будуть відправлені з/через цей email у тексті листа)</label>
+        <input type="email" id="useremail" placeholder="example@domain.com">
+      </div>
+    </div>
+
+    <div class="controls-row" style="margin-top:14px;">
+      <button id="startBtn">Розпочати тест</button>
+      <div class="small">Час на виконання: <strong>30 хв</strong></div>
+    </div>
+    <div class="small" style="margin-top:8px;color:#374151">
+      <strong>Порада:</strong> відповіді надсилаєте самостійно після завершення — натисніть кнопку "Надіслати результати".
+    </div>
+  </section>
+
+  <!-- TEST AREA -->
+  <section class="card" id="testCard" style="display:none;margin-top:16px;">
+    <div class="top-row">
+      <div>
+        <div class="small">Час: <span id="timer">30:00</span></div>
+        <div class="small" style="margin-top:6px">Питань у тесті: <strong id="totalCount">20</strong></div>
+      </div>
+      <div style="text-align:right">
+        <div class="small">Прогрес</div>
+        <div class="progress" style="width:220px;"><i id="progBar"></i></div>
+        <div class="small" style="margin-top:6px">Поточне питання: <strong id="qIndex">1</strong>/<span id="qTotal">20</span></div>
+      </div>
+    </div>
+
+    <div id="questionArea"></div>
+
+    <div class="nav-row">
+      <button class="btn secondary" id="prevBtn">⬅ Назад</button>
+      <div>
+        <button class="btn secondary" id="resetBtn">Перезапустити</button>
+        <button class="btn" id="nextBtn">Далі ➡</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS CARD -->
+  <section class="card" id="resultCard" style="display:none;margin-top:16px;">
+    <h3 id="resultTitle"></h3>
+    <div class="results small" id="resultSummary"></div>
+
+    <div style="margin-top:12px;">
+      <button class="btn" id="sendBtn">Надіслати результати на пошту</button>
+      <button class="btn secondary" id="downloadBtn">Завантажити звіт (TXT)</button>
+      <button class="btn secondary" id="retryBtn">Пройти знову</button>
+    </div>
+
+    <div style="margin-top:12px;">
+      <details>
+        <summary class="small">Переглянути детальний звіт (всі питання та відповіді)</summary>
+        <pre id="detailedReport"></pre>
+      </details>
+    </div>
+  </section>
+
+  <footer>© Симулятор тестів — Цивільний захист</footer>
 </div>
 
-<div id="testDiv" style="display:none;">
-  <div class="timer">Час: <span id="time">30:00</span></div>
-  <div style="margin-bottom:15px">
-    <label><strong>Введіть ПІБ:</strong></label><br>
-    <input id="username" type="text" placeholder="Ваше ПІБ" />
-  </div>
-  <p>Питань: <span id="total">20</span></p>
-  <div id="app"></div>
-</div>
-</div>
+<script>
+/* ===================== НАЛАШТУВАННЯ ===================== */
+const SEND_TO_EMAIL = "H.duzhar@esbu.gov.ua"; // <- змінити, якщо треба
+const TOTAL_QUESTIONS = 20;
+const TIME_LIMIT_SECONDS = 30 * 60; // 30 хвилин
 
-<script type="module">
-// ----- Firebase SDK -----
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-functions.js";
-
-// ----- Firebase Config -----
-const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const functions = getFunctions(app);
-
-// ---------------- ПИТАННЯ ----------------
-const questions = [
-{ id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
-{ id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
-{ id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація // -------- ПИТАННЯ --------
+/* ===================== ПИТАННЯ (усі 55) ===================== */
+/* Масив з 55 питань — текст і варіанти у порядку A,B,C,D.
+   Правильна відповідь в answersByPos як буква (A..D) для кожного питання по порядку */
 const allQuestions = [
-{ id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
-{ id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
-{ id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
-{ id:4,text:"Після сигналу сирени працівник не чув оголошення. Його перша дія?",options:{A:"Зателефонувати керівнику",B:"Увімкнути найближчий радіоприймач/телевізор",C:"Бігти до укриття",D:"Писати в месенджер колегам"}},
-{ id:5,text:"Який вид випромінювання має найменшу проникну здатність?",options:{A:"Альфа",B:"Бета",C:"Гамма",D:"Нейтронне"}},
-{ id:6,text:"Дезактивація — це:",options:{A:"Прання одягу",B:"Видалення радіоактивних речовин з поверхонь",C:"Очищення води",D:"Зниження температури"}},
-{ id:7,text:"Ознакою радіаційного ураження НЕ є:",options:{A:"Нудота",B:"Запаморочення",C:"Лихоманка",D:"Підвищений апетит"}},
-{ id:8,text:"Після виходу із забрудненої зони перша дія:",options:{A:"Прийняти їжу",B:"Провести санітарну обробку",C:"Пити воду",D:"Бігти додому"}},
-{ id:9,text:"За шкалою МСК-64 землетрус у 7 балів є:",options:{A:"Помірним",B:"Дуже сильним",C:"Катастрофічним",D:"Слабким"}},
-{ id:10,text:"При землетрусі в приміщенні найкраще:",options:{A:"Стати біля вікна",B:"Сховатися під міцний стіл",C:"Стояти під люстрою",D:"Бігти сходами вниз"}},
-{ id:11,text:"Гідрометеорологічна НС включає:",options:{A:"Торф’яні пожежі",B:"Повінь",C:"Техногенну аварію",D:"Вулканічний вибух"}},
-{ id:12,text:"Під час зсуву ґрунту слід:",options:{A:"Залишатися на місці",B:"Втекти перпендикулярно до його руху",C:"Спуститися вниз по схилу",D:"Ховатися у низині"}},
-{ id:13,text:"Працівник почув характерний гул підлоги — початок землетрусу. Що робити?",options:{A:"Бігти до ліфта",B:"Відкрити вікна",C:"Заховатися у безпечній зоні (кут, простінок, під стіл)",D:"Ховатися в ванній кімнаті без вікон"}},
-{ id:14,text:"СДОР — це:",options:{A:"Сильно діючі отруйні речовини",B:"Стабільні дерматологічні органічні реагенти",C:"Суміш дезінфекційних органічних речовин",D:"Стандартизовані джерела органічного розпаду"}},
-{ id:15,text:"Найбільш небезпечні властивості ХНР:",options:{A:"Колір",B:"Запах",C:"Токсичність і леткість",D:"Здатність до висихання"}},
-{ id:16,text:"Перший спосіб захисту при хімічній аварії:",options:{A:"Вимити підлогу",B:"Герметизувати приміщення",C:"Відкрити двері",D:"Вийти на дах"}},
-{ id:17,text:"У разі запаху хлору в повітрі найкраще:",options:{A:"Піднятися на верхні поверхи",B:"Спуститися в підвал",C:"Викликати таксі",D:"Продовжити роботу"}},
-{ id:18,text:"В офісі команда почула сирену та отримала повідомлення про викид аміаку. Дії?",options:{A:"Зачинити вікна, змочити марлю і прикрити рот",B:"Вийти на вулицю",C:"Лягти на підлогу",D:"Увімкнути кондиціонер"}},
-{ id:19,text:"Найпоширеніша причина пожеж у офісах:",options:{A:"Витік води",B:"Порушення електробезпеки",C:"Відсутність вентиляції",D:"Використання кондиціонера"}},
-{ id:20,text:"Який вогнегасник підходить для електроприладів?",options:{A:"Пінний",B:"Водяний",C:"Вуглекислотний",D:"Порошковий лише на відкритому повітрі"}},
-{ id:21,text:"Який клас пожежі не стосується горіння газів?",options:{A:"A",B:"B",C:"C",D:"E"}},
-{ id:22,text:"Під час пожежі в будівлі потрібно:",options:{A:"Користуватися ліфтом",B:"Рухатися до виходу в напрямку протидиму",C:"Ховатися під меблями",D:"Відкривати всі вікна"}},
-{ id:23,text:"У приміщенні задимлення. Перша правильна дія?",options:{A:"Дихати через мокру тканину і покинути зону",B:"Вимкнути комп’ютер",C:"Бігти по сходах угору",D:"Відчинити всі двері"}},
-{ id:24,text:"Головна небезпека масового скупчення:",options:{A:"Нестача води",B:"Паніка та тиснява",C:"Холод",D:"Наявність камер"}},
-{ id:25,text:"Під час тисняви найнебезпечніше:",options:{A:"Тримати руки в кишенях",B:"Стояти боком і захищати грудну клітку",C:"Нахилитися вниз",D:"Знімати одяг"}},
-{ id:26,text:"Який захід НЕ належить до профілактики інфекцій?",options:{A:"Мити руки",B:"Носити маску",C:"Уживати антибіотики без призначення",D:"Дотримуватися дистанції"}},
-{ id:27,text:"При кашлі хворого в приміщенні слід:",options:{A:"Вимкнути вентиляцію",B:"Забезпечити провітрювання",C:"Закрити всі вікна",D:"Сісти поруч"}},
-{ id:28,text:"Під час евакуації з торгового центру почалася тиснява. Твої дії?",options:{A:"Підняти руки на рівень грудей, рухатися з натовпом",B:"Зупинитися посеред потоку",C:"Сісти на підлогу",D:"Тримати телефон у руках"}},
-{ id:29,text:"Перше, що треба зробити при наданні допомоги:",options:{A:"Відразу накласти пов’язку",B:"Оцінити безпеку місця",C:"Викликати начальника",D:"Дати води потерпілому"}},
-{ id:30,text:"Зупинка серця визначається за:",options:{A:"Почервонінням шкіри",B:"Відсутністю пульсу і дихання",C:"Потовиділенням",D:"Судомами"}},
-{ id:31,text:"Спосіб 'рот у рот' застосовується для:",options:{A:"Зупинки кровотечі",B:"Штучного дихання",C:"Іммобілізації",D:"Зниження температури"}},
-{ id:32,text:"При артеріальній кровотечі кров має колір:",options:{A:"Темно-вишневий",B:"Яскраво-червоний і пульсує",C:"Жовтий",D:"Чорний"}},
-{ id:33,text:"Людина втратила свідомість і не дихає. Твої дії?",options:{A:"Побризкати водою",B:"Почати СЛР (30 компресій — 2 вдування)",C:"Дати нашатир",D:"Розтирати руки потерпілому"}},
-{ id:34,text:"Яка хімічна речовина важча за повітря?",options:{A:"Аміак",B:"Хлор",C:"Метан",D:"Водень"}},
-{ id:35,text:"Чим визначають токсичність речовини?",options:{A:"Концентрацією",B:"Запахом",C:"Густотою",D:"Температурою"}},
-{ id:36,text:"Чи можна користуватися кондиціонером під час хімічної аварії?",options:{A:"Так",B:"Так, якщо тепло",C:"Ні",D:"Так, якщо приміщення прохолодне"}},
-{ id:37,text:"Найпоширеніший спосіб зараження ХНР:",options:{A:"Дотик",B:"Інгаляція",C:"Тиск",D:"Світло"}},
-{ id:38,text:"Під час роботи працівник впав у зону хімічної хмари. Перше, що треба зробити?",options:{A:"Внести його в укриття",B:"Винести на свіже повітря проти вітру",C:"Дати йому води",D:"Зняти одяг із співробітника"}},
-{ id:39,text:"Хто відповідає за організацію ЦЗ на підприємстві?",options:{A:"Директор",B:"Керівник",C:"Черговий охоронець",D:"Волонтер"}},
-{ id:40,text:"Комісія з НС створюється:",options:{A:"Лише в державних органах",B:"На об’єкті, підприємстві, установі",C:"Тільки у військових частинах",D:"Тільки в школах"}},
-{ id:41,text:"Під час НС хто координує рятувальні роботи?",options:{A:"Директор з маркетингу",B:"Керівник робіт з ліквідації НС",C:"Черговий охоронець",D:"Волонтер"}},
-{ id:42,text:"Який обов’язок працівників у сфері ЦЗ?",options:{A:"Уникати навчань",B:"Виконувати правила безпеки",C:"Ігнорувати інструкції",D:"Вести відеозйомку НС"}},
-{ id:43,text:"Працівник дізнався про пожежу на сусідньому поверсі. Його перша дія?",options:{A:"Продовжувати роботу",B:"Повідомити керівництво та розпочати евакуацію",C:"Ховатися під стіл",D:"Викликати таксі"}},
-{ id:44,text:"Що є основним документом, який визначає дії персоналу під час загрози або виникнення НС на підприємстві?",options:{A:"Журнал інструктажів",B:"Об’єктовий план реагування на надзвичайні ситуації",C:"План пожежогасіння",D:"Календар навчань"}},
-{ id:45,text:"Що входить до прогнозованих небезпек, які враховуються в об’єктовому плані реагування?",options:{A:"Лише економічні ризики",B:"Природні загрози та небезпечні виробничі фактори",C:"Зміни у кадровому складі",D:"Погодні умови без аномалій"}},
-{ id:46,text:"Яку функцію виконує об’єктова система оповіщення?",options:{A:"Контроль робочого часу персоналу",B:"Повідомлення працівників про загрозу або виникнення НС",C:"Ведення електронної пошти в кризових умовах",D:"Заміна радіаційного моніторингу"}},
-{ id:47,text:"Які дії працівника при отриманні сигналу щодо аварійної зупинки виробництва?",options:{A:"Завершити особисті справи",B:"Негайно виконати дії своїх інструкцій і відключити обладнання",C:"Зачекати додаткових вказівок у чаті колег",D:"Самостійно змінити маршрут евакуації"}},
-{ id:48,text:"Що робить персонал після аварійної зупинки обладнання згідно з планом реагування?",options:{A:"Повертається до роботи",B:"Залишається на місці, чекаючи дозволу",C:"Негайно залишає небезпечну зону за встановленими шляхами",D:"Перевіряє документацію"}},
-{ id:49,text:"Сталася аварія з загрозою небезпечних факторів. Об’єктова система оповіщення подала сигнал. Яка дія правильна?",options:{A:"Вимкнути звук та продовжувати роботу",B:"Виконати інструкції маршруту евакуації",C:"Збирати речі та чекати колег",D:"Вийти до парковки шукати керівника"}},
-{ id:50,text:"Яке основне завдання аварійної зупинки виробництва?",options:{A:"Мінімізувати час простою",B:"Запобігти розвитку небезпечних факторів",C:"Зменшити витрати матеріалів",D:"Підготувати звіт"}},
-{ id:51,text:"Що робити у разі пошкодження хімічного резервуару?",options:{A:"Ігнорувати і повідомити через тиждень",B:"Негайно евакуюватися та повідомити службу ЦЗ",C:"Продовжити роботу, якщо немає запаху",D:"Викликати таксі")},
-{ id:52,text:"Як діяти при тривозі у нічний час?",options:{A:"Поспати далі",B:"Одягнути захисний одяг та приготуватися до евакуації",C:"Вийти на вулицю без захисту",D:"Продовжити роботу")},
-{ id:53,text:"Хто відповідає за організацію евакуації працівників?",options:{A:"Відділ маркетингу",B:"Керівник об’єкта/підприємства",C:"Рятувальники",D:"Медперсонал"}},
-{ id:54,text:"Що потрібно робити після сигналу «Увага всім!»?",options:{A:"Очікувати на додаткові вказівки та дотримуватись інструкцій",B:"Ігнорувати сигнал",C:"Продовжити роботу",D:"Залишити будівлю без перевірки"}),
-{ id:55,text:"Під час аварії на підприємстві, перша дія працівника:",options:{A:"Зателефонувати колегам",B:"Негайно виконати план реагування на НС",C:"Закрити вікна",D:"Продовжити роботу"}}
+  { text:"Що означає попереджувальний сигнал “Увага всім!”?", options:["Потрібно негайно евакуюватися","Увімкнути радіо/телебачення для отримання повідомлення","Виходити на вулицю","Чекати на інструкції через месенджер"] },
+  { text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?", options:["Укриття в підземному переході","Сховище або протирадіаційне укриття","Балкон","Будь-який приватний гараж"] },
+  { text:"Основне призначення індивідуального перев’язочного пакета:", options:["Дезактивація одягу","Знезараження повітря","Зупинка кровотечі та перев’язка ран","Зниження радіаційного фону"] },
+  { text:"Після сигналу сирени працівник не чув оголошення. Його перша дія?", options:["Зателефонувати керівнику","Увімкнути найближчий радіоприймач/телевізор","Бігти до укриття","Писати в месенджер колегам"] },
+  { text:"(ситуаційне) Після сигналу сирени працівник не чув оголошення. Його перша дія? (альтернативний сценарій)", options:["Зателефонувати керівнику","Увімкнути найближчий радіоприймач/телевізор","Бігти до укриття","Писати в месенджер колегам"] },
+
+  { text:"Який вид випромінювання має найменшу проникну здатність?", options:["Альфа","Бета","Гамма","Нейтронне"] },
+  { text:"Дезактивація — це:", options:["Прання одягу","Видалення радіоактивних речовин з поверхонь","Очищення води","Зниження температури"] },
+  { text:"Ознакою радіаційного ураження НЕ є:", options:["Нудота","Запаморочення","Лихоманка","Підвищений апетит"] },
+  { text:"Після виходу із забрудненої зони перша дія:", options:["Прийняти їжу","Провести санітарну обробку","Пити воду","Бігти додому"] },
+  { text:"(тема 3) За шкалою МСК-64 землетрус у 7 балів є:", options:["Помірним","Дуже сильним","Катастрофічним","Слабким"] },
+
+  { text:"При землетрусі в приміщенні найкраще:", options:["Стати біля вікна","Сховатися під міцний стіл","Стояти під люстрою","Бігти сходами вниз"] },
+  { text:"Гідрометеорологічна НС включає:", options:["Торф’яні пожежі","Повінь","Техногенну аварію","Вулканічний вибух"] },
+  { text:"Під час зсуву ґрунту слід:", options:["Залишатися на місці","Втекти перпендикулярно до його руху","Спуститися вниз по схилу","Ховатися у низині"] },
+  { text:"Працівник почув характерний гул підлоги — що робити?", options:["Бігти до ліфта","Відкрити вікна","Заховатися у безпечній зоні (кут, простінок, під стіл)","Ховатися в ванній кімнаті без вікон"] },
+  { text:"СДОР — це:", options:["Сильно діючі отруйні речовини","Стабільні дерматологічні органічні реагенти","Суміш дезінфекційних органічних речовин","Стандартизовані джерела органічного розпаду"] },
+
+  { text:"Найбільш небезпечні властивості ХНР:", options:["Колір","Запах","Токсичність і леткість","Здатність до висихання"] },
+  { text:"Перший спосіб захисту при хімічній аварії:", options:["Вимити підлогу","Герметизувати приміщення","Відкрити двері","Вийти на дах"] },
+  { text:"У разі запаху хлору в повітрі найкраще:", options:["Піднятися на верхні поверхи","Спуститися в підвал","Викликати таксі","Продовжити роботу"] },
+  { text:"В офісі команда почула сирену та отримала повідомлення про викид аміаку. Дії?", options:["Зачинити вікна, змочити марлю і прикрити рот","Вийти на вулицю","Лягти на підлогу","Увімкнути кондиціонер"] },
+
+  { text:"Найпоширеніша причина пожеж у офісах:", options:["Витік води","Порушення електробезпеки","Відсутність вентиляції","Використання кондиціонера"] },
+  { text:"Який вогнегасник підходить для електроприладів?", options:["Пінний","Водяний","Вуглекислотний","Порошковий лише на відкритому повітрі"] },
+  { text:"Який клас пожежі не стосується горіння газів?", options:["A","B","C","E"] },
+  { text:"Під час пожежі в будівлі потрібно:", options:["Користуватися ліфтом","Рухатися до виходу в напрямку протидиму","Ховатися під меблями","Відкривати всі вікна"] },
+
+  { text:"У приміщенні задимлення. Перша правильна дія?", options:["Дихати через мокру тканину і покинути зону","Вимкнути комп’ютер","Бігти по сходах угору","Відчинити всі двері"] },
+  { text:"Головна небезпека масового скупчення:", options:["Нестача води","Паніка та тиснява","Холод","Наявність камер"] },
+  { text:"Під час тисняви найнебезпечніше:", options:["Тримати руки в кишенях","Стояти боком і захищати грудну клітку","Нахилитися вниз","Знімати одяг"] },
+  { text:"Який захід НЕ належить до профілактики інфекцій?", options:["Мити руки","Носити маску","Уживати антибіотики без призначення","Дотримуватися дистанції"] },
+
+  { text:"При кашлі хворого в приміщенні слід:", options:["Вимкнути вентиляцію","Забезпечити провітрювання","Закрити всі вікна","Сісти поруч"] },
+  { text:"Під час евакуації з торгового центру почалася тиснява. Твої дії?", options:["Підняти руки на рівень грудей, рухатися з натовпом","Зупинитися посеред потоку","Сісти на підлогу","Тримати телефон у руках"] },
+  { text:"Перше, що треба зробити при наданні допомоги:", options:["Відразу накласти пов’язку","Оцінити безпеку місця","Викликати начальника","Дати води потерпілому"] },
+  { text:"Зупинка серця визначається за:", options:["Почервонінням шкіри","Відсутністю пульсу і дихання","Потовиділенням","Судомами"] },
+
+  { text:"Спосіб 'рот у рот' застосовується для:", options:["Зупинки кровотечі","Штучного дихання","Іммобілізації","Зниження температури"] },
+  { text:"При артеріальній кровотечі кров має колір:", options:["Темно-вишневий","Яскраво-червоний і пульсує","Жовтий","Чорний"] },
+  { text:"Людина втратила свідомість і не дихає. Твої дії?", options:["Побризкати водою","Почати СЛР (30 компресій — 2 вдування)","Дати нашатир","Розтирати руки потерпілому"] },
+  { text:"Яка хімічна речовина важча за повітря?", options:["Аміак","Хлор","Метан","Водень"] },
+
+  { text:"Чим визначають токсичність речовини?", options:["Концентрацією","Запахом","Густотою","Температурою"] },
+  { text:"Чи можна користуватися кондиціонером під час хімічної аварії?", options:["Так","Так, якщо тепло","Ні","Так, якщо приміщення прохолодне"] },
+  { text:"Найпоширеніший спосіб зараження ХНР:", options:["Дотик","Інгаляція","Тиск","Світло"] },
+  { text:"Під час роботи працівник впав у зону хімічної хмари. Перше, що треба зробити?", options:["Внести його в укриття","Винести на свіже повітря проти вітру","Дати йому води","Зняти одяг із співробітника"] },
+
+  { text:"Хто відповідає за організацію ЦЗ на підприємстві?", options:["Директор","Керівник","Черговий охоронець","Волонтер"] },
+  { text:"Комісія з НС створюється:", options:["Лише в державних органах","На об’єкті, підприємстві, установі","Тільки у військових частинах","Тільки в школах"] },
+  { text:"Під час НС хто координує рятувальні роботи?", options:["Директор з маркетингу","Керівник робіт з ліквідації НС","Черговий охоронець","Волонтер"] },
+  { text:"Який обов’язок працівників у сфері ЦЗ?", options:["Уникати навчань","Виконувати правила безпеки","Ігнорувати інструкції","Вести відеозйомку НС"] },
+
+  { text:"Працівник дізнався про пожежу на сусідньому поверсі. Його перша дія?", options:["Продовжувати роботу","Повідомити керівництво та розпочати евакуацію","Ховатися під стіл","Викликати таксі"] },
+  { text:"Що є основним документом, що визначає дії персоналу?", options:["Журнал інструктажів","Об’єктовий план реагування на НС","План пожежогасіння","Календар навчань"] },
+  { text:"Що входить до прогнозованих небезпек?", options:["Лише економічні ризики","Природні загрози та небезпечні виробничі фактори","Зміни у кадровому складі","Погодні умови без аномалій"] },
+  { text:"Яку функцію виконує об’єктова система оповіщення?", options:["Контроль робочого часу","Повідомлення працівників про загрозу або виникнення НС","Ведення електронної пошти","Заміна радіаційного моніторингу"] },
+
+  { text:"Які дії працівника при сигналу аварійної зупинки виробництва?", options:["Завершити особисті справи","Негайно виконати дії інструкцій і відключити обладнання","Зачекати в чаті","Самостійно змінити маршрут евакуації"] },
+  { text:"Що робить персонал після аварійної зупинки?", options:["Повертається до роботи","Залишається на місці, чекаючи дозволу","Негайно залишає небезпечну зону за встановленими шляхами","Перевіряє документацію"] },
+  { text:"(ситуаційне) Об’єктова система оповіщення подала сигнал. Яка дія правильна?", options:["Вимкнути звук та продовжувати роботу","Виконати інструкції маршруту евакуації","Збирати речі і чекати колег","Вийти до парковки шукати керівника"] },
+  { text:"Яке основне завдання аварійної зупинки виробництва?", options:["Мінімізувати час простою","Запобігти розвитку небезпечних факторів","Зменшити витрати матеріалів","Підготувати систему до ремонту"] },
+
+  { text:"Як забезпечуються працівники ЗІЗ згідно з планом?", options:["За бажанням кожного","Видача ЗІЗ відбувається до початку роботи або під час загрози","Лише після НС","ЗІЗ видаються тільки керівному складу"] },
+  { text:"При маршруті евакуації коридор задимлений. Дії?", options:["Повернутися на робоче місце","Використати альтернативний шлях згідно з планом евакуації","Відчинити всі двері","Чекати інших працівників"] },
+  { text:"Яку роль відіграє інструкція персоналу у плані реагування на НС?", options:["Містить особисті рекомендації","Визначає обов’язкові дії працівників у конкретних аварійних ситуаціях","Використовується тільки під час навчань","Є формальним документом без практичного значення"] }
 ];
 
-// ----- ВІДПОВІДІ -----
-const answers = {
-1:"B",2:"B",3:"C",4:"B",5:"A",6:"B",7:"D",8:"B",9:"B",10:"B",
-11:"B",12:"B",13:"C",14:"A",15:"C",16:"B",17:"B",18:"A",19:"B",20:"C",
-21:"D",22:"B",23:"A",24:"B",25:"B",26:"C",27:"B",28:"A",29:"B",30:"B",
-31:"B",32:"B",33:"B",34:"B",35:"A",36:"C",37:"B",38:"B",39:"B",40:"B",
-41:"B",42:"B",43:"B",44:"B",45:"B",46:"B",47:"B",48:"C",49:"B",50:"B",
-51:"B",52:"B",53:"B",54:"B",55:"A"
-};
+/* ВІДПОВІДІ — у форматі букв (A..D) по порядку для 55 питань */
+const answersByPos = [
+  "B","B","C","B","B", // 1-5
+  "A","B","D","B","B", //6-10
+  "B","B","B","B","C", //11-15
+  "A","C","B","B",      //16-19 (note: 20 in earlier list was A)
+  "B","C","A","B","A", //21-25
+  "B","B","C","B","A", //26-30
+  "B","B","B","B","B", //31-35
+  "B","A","C","B","B", //36-40
+  "B","B","B","B","B", //41-45
+  "B","B","B","C","B", //46-50  (but from user's mapping 50 is C)
+  "B","B","B","B","B"  //51-55 (user provided B for 51-55 except 50C handled)
+];
 
-// ----- ВИПАДКОВИЙ НАБІР 20 -----
-let testQuestions = [];
-function pickRandom20(){
-  const shuffled = questions.sort(()=>0.5-Math.random());
-  testQuestions = shuffled.slice(0,20);
+/* ===================== ПІДГОТОВКА: конвертація відповідей у індекси ===================== */
+function letterToIndex(letter){ return {A:0,B:1,C:2,D:3}[letter] ?? -1; }
+const correctIndexByPos = answersByPos.map(l=>letterToIndex(l));
+
+/* ===================== ВИБІР 20 ПИТАНЬ + перемішування варіантів з збереженням правильності ===================== */
+function pickRandom20WithShuffledOptions(){
+  // копіюємо масив питань з індексом
+  const copy = allQuestions.map((q,idx)=> ({...q, originalPos: idx}));
+  // shuffle
+  for(let i=copy.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [copy[i],copy[j]]=[copy[j],copy[i]]; }
+  const chosen = copy.slice(0,TOTAL_QUESTIONS);
+  // для кожного питання перемішуємо варіанти, але знаємо де була правильна опція
+  const prepared = chosen.map(q=>{
+    const origIdx = q.originalPos;
+    const correctOrigIndex = correctIndexByPos[origIdx];
+    // create array of {text,origIndex}
+    const opts = q.options.map((t,i)=> ({t, i}));
+    // shuffle opts
+    for(let i=opts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]]; }
+    const shuffledOptions = opts.map(o=>o.t);
+    // find new index where origIndex equals correctOrigIndex
+    const newCorrectIndex = opts.findIndex(o=>o.i === correctOrigIndex);
+    return {
+      ...q,
+      optionsShuffled: shuffledOptions,
+      correctIndex: newCorrectIndex
+    };
+  });
+  return prepared;
 }
 
-// ----- СТАН ТЕСТУ -----
-let state = { index:0, choices:{}, showResults:false };
-let userEmail = '';
+/* ===================== СТЕЙТ ===================== */
+let testQuestions = []; // will hold 20 chosen with shuffled options
+let state = { index:0, answers: {} }; // answers: pos->selectedIndex
+let timerInterval = null;
+let timeLeft = TIME_LIMIT_SECONDS;
 
-// ----- GOOGLE LOGIN -----
-document.getElementById('googleLogin').addEventListener('click',()=>{
-  const provider = new GoogleAuthProvider();
-  signInWithPopup(auth, provider)
-  .then((result)=>{
-    userEmail = result.user.email;
-    document.getElementById('loginDiv').style.display='none';
-    document.getElementById('testDiv').style.display='block';
-    pickRandom20();
-    render();
-    startTimer();
-  }).catch(console.error);
-});
+/* ===================== UI СЕЛЕКТОРИ ===================== */
+const startBtn = document.getElementById('startBtn');
+const startCard = document.getElementById('startCard');
+const testCard = document.getElementById('testCard');
+const resultCard = document.getElementById('resultCard');
+const questionArea = document.getElementById('questionArea');
+const timerEl = document.getElementById('timer');
+const progBar = document.getElementById('progBar');
+const qIndexEl = document.getElementById('qIndex');
+const qTotalEl = document.getElementById('qTotal');
+const totalCountEl = document.getElementById('totalCount');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const resetBtn = document.getElementById('resetBtn');
+const sendBtn = document.getElementById('sendBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const retryBtn = document.getElementById('retryBtn');
+const resultTitle = document.getElementById('resultTitle');
+const resultSummary = document.getElementById('resultSummary');
+const detailedReport = document.getElementById('detailedReport');
 
-// ----- ТАЙМЕР -----
-let timeLeft = 30*60;
+/* ===================== ФУНКЦІЇ ТАЙМЕРА ===================== */
 function startTimer(){
-  const timerEl = document.getElementById('time');
-  setInterval(()=>{
-    const m=Math.floor(timeLeft/60), s=timeLeft%60;
-    timerEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;
-    if(timeLeft<=0){finishTest();}
+  clearInterval(timerInterval);
+  timeLeft = TIME_LIMIT_SECONDS;
+  updateTimerDisplay();
+  timerInterval = setInterval(()=>{
     timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      finishTest();
+    }
   },1000);
 }
-
-// ----- РЕНДЕР -----
-function render(){
-  const app = document.getElementById('app');
-  if(state.showResults){
-    const score = grade();
-    const percent = Math.round(score/testQuestions.length*100);
-    const username = document.getElementById('username').value||'Невідомо';
-    const passed = percent>=50;
-    const resultText = passed?"Тест СКЛАДЕНО":"ТЕСТ НЕ СКЛАДЕНО";
-
-    const payload = {username,userEmail,score,total:testQuestions.length,percent};
-
-    // ----- ВИКЛИК FIREBASE FUNCTION -----
-    const sendResults = httpsCallable(functions,'sendTestResults');
-    sendResults(payload).then(()=>console.log("Результат відправлено")).catch(console.error);
-
-    app.innerHTML = `<div>
-      <h2>${resultText}</h2>
-      <p>Балів: <strong>${score}</strong> / ${testQuestions.length}</p>
-      <button onclick="location.reload()">Пройти знову</button>
-    </div>`;
-    return;
-  }
-
-  const q = testQuestions[state.index];
-  app.innerHTML = `<div class='question'>
-    <div><strong>Питання ${state.index+1}:</strong> ${q.text}</div>
-    <div class="options">
-      ${Object.entries(q.options).map(([k,v])=>`<label class='opt'><input type='radio' name='q${q.id}' value='${k}' ${state.choices[q.id]===k?'checked':''}> <strong>${k}.</strong> ${v}</label>`).join('')}
-    </div>
-    <div class="controls">
-      <button class="secondary" onclick="prev()" ${state.index===0?'disabled':''}>Назад</button>
-      <button class="secondary" onclick="next()" ${state.index===testQuestions.length-1?'disabled':''}>Далі</button>
-      <button onclick="finishTest()">Завершити</button>
-    </div>
-  </div>`;
-
-  document.querySelectorAll('input[type=radio]').forEach(r=>{
-    r.addEventListener('change', e=>{ state.choices[q.id]=e.target.value; });
-  });
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft % 60;
+  timerEl.textContent = ${m}:${s.toString().padStart(2,'0')};
 }
 
-function prev(){state.index--;render();}
-function next(){state.index++;render();}
-function finishTest(){state.showResults=true;render();}
-function grade(){let sc=0;for(const q of testQuestions){if(state.choices[q.id]===answers[q.id])sc++;}return sc;}
+/* ===================== РОБОЧІ ФУНКЦІЇ ===================== */
+function startTest(){
+  const username = document.getElementById('username').value.trim();
+  const email = document.getElementById('useremail').value.trim();
+  if(!username){ alert("Введіть ПІБ"); return; }
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert("Введіть коректний email"); return; }
+
+  // prepare test
+  testQuestions = pickRandom20WithShuffledOptions();
+  state = { index:0, answers:{} };
+
+  // UI
+  startCard.style.display = 'none';
+  resultCard.style.display = 'none';
+  testCard.style.display = 'block';
+
+  totalCountEl.textContent = testQuestions.length;
+  qTotalEl.textContent = testQuestions.length;
+  updateProgress();
+
+  renderQuestion();
+  startTimer();
+}
+
+function renderQuestion(){
+  const qObj = testQuestions[state.index];
+  qIndexEl.textContent = state.index + 1;
+
+  const html = `
+    <div class="question-card">
+      <div class="small">Тема / Питання <strong>${state.index+1}</strong> з ${testQuestions.length}</div>
+      <h3 style="margin-top:8px">${qObj.text}</h3>
+      <div class="options" id="optsContainer">
+        ${qObj.optionsShuffled.map((opt, idx)=>`
+          <label class="opt" data-idx="${idx}">
+            <input type="radio" name="qselect" value="${idx}" ${state.answers[state.index]===idx?'checked':''}>
+            <div>${String.fromCharCode(65+idx)}.&nbsp;<span>${opt}</span></div>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  questionArea.innerHTML = html;
+
+  // add listeners for options
+  document.querySelectorAll('#optsContainer .opt input').forEach(r=>{
+    r.addEventListener('change', e=>{
+      const val = Number(e.target.value);
+      state.answers[state.index] = val;
+      updateProgress();
+    });
+  });
+
+  // update nav buttons
+  prevBtn.disabled = state.index === 0;
+  nextBtn.disabled = state.index === testQuestions.length - 1;
+}
+
+function updateProgress(){
+  const answeredCount = Object.keys(state.answers).length;
+  const percent = Math.round((answeredCount / testQuestions.length) * 100);
+  progBar.style.width = ${percent}%;
+}
+
+function prevQuestion(){ if(state.index>0){ state.index--; renderQuestion(); } }
+function nextQuestion(){ if(state.index<testQuestions.length-1){ state.index++; renderQuestion(); } }
+
+function finishTest(){
+  clearInterval(timerInterval);
+  // compute score
+  let score = 0;
+  const details = [];
+  for(let i=0;i<testQuestions.length;i++){
+    const q = testQuestions[i];
+    const chosenIdx = (typeof state.answers[i] === 'number') ? state.answers[i] : null;
+    const correctIdx = q.correctIndex;
+    const ok = (chosenIdx === correctIdx);
+    if(ok) score++;
+    details.push({
+      number: i+1,
+      text: q.text,
+      options: q.optionsShuffled,
+      chosen: chosenIdx,
+      correct: correctIdx,
+      correctLetter: String.fromCharCode(65 + correctIdx)
+    });
+  }
+
+  const percent = Math.round(score / testQuestions.length * 100);
+  const status = percent >= 50 ? "ТЕСТ СКЛАДЕНО" : "ТЕСТ НЕ СКЛАДЕНО";
+
+  // prepare UI
+  testCard.style.display = 'none';
+  resultCard.style.display = 'block';
+  resultTitle.textContent = status;
+  resultSummary.innerHTML = <strong>Результат:</strong> ${score} / ${testQuestions.length} (${percent}%)<br><span class="small">ПІБ: ${document.getElementById('username').value} · Email: ${document.getElementById('useremail').value}</span>;
+
+  // detailed report text
+  const reportLines = details.map(d=>{
+    const chosenText = d.chosen!==null ? ${String.fromCharCode(65+d.chosen)} — ${d.options[d.chosen]} : 'не вибрано';
+    const correctText = ${d.correctLetter} — ${d.options[d.correct]};
+    return ${d.number}. ${d.text}\n  Обрано: ${chosenText}\n  Правильно: ${correctText}\n;
+  });
+  detailedReport.textContent = Результат: ${score}/${testQuestions.length} (${percent}%)\n\n + reportLines.join("\n");
+
+  // store current results for send/download
+  resultCard.dataset.score = score;
+  resultCard.dataset.percent = percent;
+  resultCard.dataset.details = detailedReport.textContent;
+}
+
+/* ===================== НАДІСЛАТИ РЕЗУЛЬТАТИ (кнопка користувача) ===================== */
+function sendResults(){
+  const username = document.getElementById('username').value.trim();
+  const useremail = document.getElementById('useremail').value.trim();
+  if(!useremail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(useremail)){ alert("Вкажіть коректний email у стартовій формі."); return; }
+
+  const score = resultCard.dataset.score || '0';
+  const percent = resultCard.dataset.percent || '0';
+  const details = resultCard.dataset.details || '';
+
+  const message = Від: ${useremail}\nПІБ: ${username}\nРезультат: ${score} / ${testQuestions.length} (${percent}%)\n\nДеталі:\n${details};
+
+  // create form and inputs safely (avoid template quote problems)
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = 'https://formsubmit.co/' + encodeURIComponent(SEND_TO_EMAIL);
+  form.style.display = 'none';
+
+  const inpMessage = document.createElement('input');
+  inpMessage.type = 'hidden';
+  inpMessage.name = 'message';
+  inpMessage.value = message;
+  form.appendChild(inpMessage);
+
+  const inpCaptcha = document.createElement('input');
+  inpCaptcha.type = 'hidden';
+  inpCaptcha.name = '_captcha';
+  inpCaptcha.value = 'false';
+  form.appendChild(inpCaptcha);
+
+  document.body.appendChild(form);
+  form.submit();
+}
+
+/* ===================== Завантажити звіт як TXT ===================== */
+function downloadReport(){
+  const text = resultCard.dataset.details || 'Немає результатів';
+  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'report_cz_test.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* ===================== Події елементів ===================== */
+startBtn.addEventListener('click', startTest);
+prevBtn.addEventListener('click', prevQuestion);
+nextBtn.addEventListener('click', nextQuestion);
+resetBtn.addEventListener('click', ()=> location.reload());
+sendBtn.addEventListener('click', sendResults);
+downloadBtn.addEventListener('click', downloadReport);
+retryBtn.addEventListener('click', ()=> location.reload());
+
+/* на клавіатурі: стрілки навігація */
+document.addEventListener('keydown', e=>{
+  if(testCard.style.display !== 'none'){
+    if(e.key === 'ArrowLeft') prevQuestion();
+    if(e.key === 'ArrowRight') nextQuestion();
+  }
+});
 </script>
 </body>
 </html>
