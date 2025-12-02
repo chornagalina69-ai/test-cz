@@ -34,7 +34,7 @@ input#username{width:100%; padding:8px; margin-top:6px; border:1px solid #ccc; b
 </div>
 
 <script>
-// --------------- ПИТАННЯ ---------------
+// ---------------- ПИТАННЯ ----------------
 const questions = [
 { id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
 { id:2,text:"Який з нижче наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
@@ -56,7 +56,6 @@ const questions = [
 { id:18,text:"В офісі команда почула сирену та отримала повідомлення про викид аміаку. Дії?",options:{A:"Зачинити вікна, змочити марлю і прикрити рот",B:"Вийти на вулицю",C:"Лягти на підлогу",D:"Увімкнути кондиціонер"}},
 { id:19,text:"Найпоширеніша причина пожеж у офісах:",options:{A:"Витік води",B:"Порушення електробезпеки",C:"Відсутність вентиляції",D:"Використання кондиціонера"}},
 { id:20,text:"Який вогнегасник підходить для електроприладів?",options:{A:"Пінний",B:"Водяний",C:"Вуглекислотний",D:"Порошковий лише на відкритому повітрі"}},
-// Продовжуємо додавати всі питання до id:55
 { id:21,text:"Який клас пожежі не стосується горіння газів?",options:{A:"A",B:"B",C:"C",D:"E"}},
 { id:22,text:"Під час пожежі в будівлі потрібно:",options:{A:"Користуватися ліфтом",B:"Рухатися до виходу в напрямку протидиму",C:"Ховатися під меблями",D:"Відкривати всі вікна"}},
 { id:23,text:"У приміщенні задимлення. Перша правильна дія?",options:{A:"Дихати через мокру тканину і покинути зону",B:"Вимкнути комп’ютер",C:"Бігти по сходах угору",D:"Відчинити всі двері"}},
@@ -94,7 +93,7 @@ const questions = [
 { id:55,text:"Основна мета цивільного захисту:",options:{A:"Забезпечення безпеки населення та зменшення наслідків НС",B:"Контроль за робочим графіком",C:"Проведення нарад",D:"Облік майна"}}
 ];
 
-// --------------- ВІДПОВІДІ ---------------
+// ---------------- ВІДПОВІДІ ----------------
 const answers = {
 1:"B",2:"B",3:"C",4:"B",5:"A",6:"B",7:"D",8:"B",9:"B",10:"B",
 11:"B",12:"B",13:"C",14:"A",15:"C",16:"B",17:"B",18:"A",19:"B",20:"C",
@@ -104,7 +103,7 @@ const answers = {
 51:"B",52:"B",53:"B",54:"B",55:"A"
 };
 
-// --------------- СТАН ТЕСТУ ---------------
+// ---------------- СТАН ТЕСТУ ----------------
 let state = { index:0, choices:{}, showResults:false };
 
 // Таймер 30 хв
@@ -118,7 +117,7 @@ const timer = setInterval(()=>{
   timeLeft--;
 },1000);
 
-// --------------- РЕНДЕР ---------------
+// ---------------- РЕНДЕР ----------------
 function render(){
   const app = document.getElementById('app');
   if(state.showResults){
@@ -162,18 +161,14 @@ function next(){state.index++;render();}
 function finishTest(){state.showResults=true;render();}
 function grade(){let sc=0;for(const q of questions){if(state.choices[q.id]===answers[q.id])sc++;}return sc;}
 function sendEmail(text){
-  <form id="emailForm" action="https://formsubmit.co/H.duzhar@esbu.gov.ua" method="POST" style="display:none;">
-  <input type="hidden" name="message" id="emailMessage">
-  <input type="hidden" name="_captcha" value="false">
-</form>
-
-<script>
-function sendEmail(text){
-  document.getElementById('emailMessage').value = text;
-  document.getElementById('emailForm').submit();
-}
-</script>
-
+  const form = document.createElement('form');
+  form.action = "https://formsubmit.co/H.duzhar@esbu.gov.ua";
+  form.method = "POST";
+  form.style.display="none";
+  form.innerHTML = `<input type="hidden" name="message" value="${text}">
+                    <input type="hidden" name="_captcha" value="false">`;
+  document.body.appendChild(form);
+  form.submit();
 }
 
 render();
