@@ -1,89 +1,74 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<title>Тест з Цивільного захисту 2025 </title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Тест з Цивільного захисту 2025 рік</title>
 <style>
-    body{
-        font-family: system-ui;
-        background:#f3f4f6;
-        margin:0;
-        padding:20px;
-    }
-    .container{
-        max-width:900px;
-        margin:0 auto;
-        background:white;
-        padding:20px;
-        border-radius:10px;
-        box-shadow:0 4px 15px rgba(0,0,0,0.15);
-    }
-    h1{margin-top:0;}
-    .question-box{
-        border:1px solid #ddd;
-        border-radius:8px;
-        padding:15px;
-        margin-top:15px;
-    }
-    .options label{
-        display:block;
-        padding:8px;
-        border:1px solid #ddd;
-        border-radius:6px;
-        margin-bottom:6px;
-        cursor:pointer;
-    }
-    .controls{
-        display:flex;
-        justify-content:space-between;
-        margin-top:15px;
-    }
-    button{
-        background:#009688;
-        color:white;
-        border:none;
-        padding:10px 20px;
-        border-radius:6px;
-        cursor:pointer;
-    }
-    button:disabled{
-        background:#ccc;
-        cursor:not-allowed;
-    }
-    .secondary{
-        background:#e5e7eb;
-        color:black;
-    }
-    .timer{
-        font-size:20px;
-        font-weight:bold;
-        color:#c62828;
-        margin-bottom:10px;
-    }
+  :root{--accent:#0ea5a4;--muted:#6b7280;--bg:#f3f4f6}
+  body{font-family:system-ui,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:20px}
+  .container{max-width:980px;margin:0 auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.08)}
+  h1{font-size:20px;margin:0 0 12px}
+  .top{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:12px}
+  label{font-weight:600}
+  input[type="text"], input[type="email"]{width:100%;padding:8px;border:1px solid #d1d5db;border-radius:8px}
+  .meta-col{flex:1;min-width:220px}
+  .timer{font-size:16px;font-weight:700;color:#b91c1c}
+  .question-card{border:1px solid #e6eef0;padding:14px;border-radius:8px;margin-top:12px;background:#fff}
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  label.opt{display:block;padding:10px;border:1px solid #e6e9eb;border-radius:8px;cursor:pointer}
+  label.opt input{margin-right:8px}
+  .controls{display:flex;justify-content:space-between;gap:8px;margin-top:14px;flex-wrap:wrap}
+  button{background:var(--accent);color:#fff;padding:10px 14px;border:none;border-radius:8px;cursor:pointer}
+  button.secondary{background:#e5e7eb;color:#111}
+  button[disabled]{opacity:0.5;cursor:not-allowed}
+  .progress{color:var(--muted);margin-top:8px}
+  .result{padding:12px;border-radius:8px;background:#f8fafc;border:1px solid #e6eef0;margin-top:12px}
+  footer{font-size:13px;color:var(--muted);margin-top:16px}
+  @media(max-width:720px){ .options{grid-template-columns:1fr} .top{flex-direction:column} }
 </style>
 </head>
 <body>
+  <div class="container" role="main">
+    <h1>Тест з цивільного захисту — 55 питань</h1>
 
-<div class="container">
-    <h1>Тест з Цивільного захисту 2025 рік</h1>
-
-    <div class="timer">Час: <span id="time">50:00</span></div>
-
-    <div>
-        <label><strong>Ваше ПІБ:</strong></label><br>
-        <input id="username" type="text" style="width:100%;padding:8px;margin-top:5px;">
+    <div class="top">
+      <div class="meta-col">
+        <label for="fullname">Введіть ПІБ (обов'язково)</label>
+        <input id="fullname" type="text" placeholder="Прізвище Ім'я По-батькові" autocomplete="name" />
+      </div>
+      <div class="meta-col" style="max-width:360px">
+        <label for="email">Електронна пошта (для результату)</label>
+        <input id="email" type="email" value="chorna.galina69@gmail.com" />
+      </div>
+      <div style="min-width:160px;display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
+        <div class="timer">Час: <span id="displayTimer">30:00</span></div>
+        <button id="startBtn">Почати тест</button>
+      </div>
     </div>
 
-    <div style="margin-top:15px;">
-        <label><strong>Ваша Email адреса:</strong></label><br>
-        <input id="email" type="email" style="width:100%;padding:8px;margin-top:5px;">
+    <div class="progress">Питань: <span id="totalCount">55</span> — Поточне: <span id="currentIndex">0</span></div>
+
+    <div id="questionArea" class="question-card" aria-live="polite" style="display:none">
+      <!-- питання будуть вставлені сюди -->
     </div>
 
-    <button style="margin-top:15px;" onclick="startTest()">Почати тест</button>
+    <div class="controls" style="display:none" id="navControls">
+      <div style="display:flex;gap:8px">
+        <button id="prevBtn" class="secondary">Назад</button>
+        <button id="nextBtn" class="secondary">Далі</button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button id="finishBtn">Завершити і надіслати</button>
+      </div>
+    </div>
 
-    <div id="app"></div>
-</div>
+    <div id="resultArea" style="display:none"></div>
+
+    <footer>
+      Мінімум для проходження — 50% та більше. Результат автоматично надсилається на вказану електронну пошту (через formsubmit.co). Якщо надсилання не вдасться — у результаті з'явиться кнопка для ручної копії результату.
+    </footer>
+  </div>
 
 <script>
 /* ======================= ЗАПИТАННЯ (55) ======================= */
@@ -163,161 +148,229 @@ const ANSWERS = {
 41:"B",42:"B",43:"B",44:"B",45:"B",46:"B",47:"B",48:"B",49:"B",50:"C",
 51:"B",52:"B",53:"B",54:"B",55:"B"
 };
+
+/* ======================= СТЕЙТ ТЕСТУ ======================= */
 let state = {
-    index:0,
-    choices:{},
-    started:false,
-    finished:false
+  started: false,
+  index: 0,
+  choices: {},   // { questionId: "A" }
+  timeLeft: 30*60, // seconds
+  timerId: null
 };
 
-// ---- ТАЙМЕР ----
-let timeLeft = 30 * 60;
-let timer;
+/* ======== DOM ======== */
+const startBtn = document.getElementById('startBtn');
+const fullnameInput = document.getElementById('fullname');
+const emailInput = document.getElementById('email');
+const questionArea = document.getElementById('questionArea');
+const navControls = document.getElementById('navControls');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const finishBtn = document.getElementById('finishBtn');
+const displayTimer = document.getElementById('displayTimer');
+const totalCount = document.getElementById('totalCount');
+const currentIndex = document.getElementById('currentIndex');
+const resultArea = document.getElementById('resultArea');
+
+/* ======== ІНІЦІАЛІЗАЦІЯ ======== */
+totalCount.textContent = QUESTIONS.length;
+currentIndex.textContent = 0;
+displayTimer.textContent = formatTime(state.timeLeft);
+
+/* ======== ФУНКЦІЇ ======== */
+function formatTime(seconds){
+  const m = Math.floor(seconds/60).toString().padStart(2,'0');
+  const s = (seconds%60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+
+function startTest(){
+  const name = fullnameInput.value.trim();
+  const email = emailInput.value.trim();
+  if(!name){ alert("Введіть ПІБ перед початком тесту."); fullnameInput.focus(); return; }
+  if(!email || !validateEmail(email)){ alert("Введіть коректну електронну адресу для надсилання результатів."); emailInput.focus(); return; }
+
+  state.started = true;
+  state.index = 0;
+  state.choices = {};
+  state.timeLeft = 30*60;
+  questionArea.style.display = 'block';
+  navControls.style.display = 'flex';
+  resultArea.style.display = 'none';
+  renderQuestion();
+  startTimer();
+  // сховати кнопку старту (але можна лишити)
+  startBtn.disabled = true;
+  fullnameInput.disabled = true;
+  emailInput.disabled = true;
+}
+
+function validateEmail(email) {
+  return /\S+@\S+\.\S+/.test(email);
+}
 
 function startTimer(){
-    timer = setInterval(()=>{
-        let m = Math.floor(timeLeft/60);
-        let s = timeLeft % 60;
-        document.getElementById("time").textContent = `${m}:${s.toString().padStart(2,'0')}`;
-
-        if(timeLeft <= 0){
-            clearInterval(timer);
-            finishTest();
-        }
-        timeLeft--;
-    },1000);
+  if(state.timerId) clearInterval(state.timerId);
+  state.timerId = setInterval(()=>{
+    state.timeLeft--;
+    displayTimer.textContent = formatTime(state.timeLeft);
+    if(state.timeLeft <= 0){
+      clearInterval(state.timerId);
+      alert("Час вичерпано. Тест буде завершений.");
+      finishAndShowResults();
+    }
+  },1000);
 }
 
-// ---- ПОЧАТОК ТЕСТУ ----
-function startTest(){
-    const username = document.getElementById("username").value.trim();
-    const email = document.getElementById("email").value.trim();
+function renderQuestion(){
+  const q = QUESTIONS[state.index];
+  currentIndex.textContent = (state.index+1);
+  // build HTML
+  let html = `<div><strong>Питання ${state.index+1} з ${QUESTIONS.length}:</strong></div>`;
+  html += `<div style="margin-top:8px">${escapeHtml(q.text)}</div>`;
+  html += `<div class="options" role="radiogroup" aria-labelledby="q${q.id}">`;
+  for(const key of Object.keys(q.options)){
+    const checked = state.choices[q.id] === key ? 'checked' : '';
+    html += `<label class="opt"><input type="radio" name="answer" value="${key}" ${checked} /> <strong>${key}.</strong> ${escapeHtml(q.options[key])}</label>`;
+  }
+  html += `</div>`;
+  questionArea.innerHTML = html;
 
-    if (!username){
-        alert("Будь ласка, введіть ПІБ.");
-        return;
-    }
-    if (!email){
-        alert("Будь ласка, введіть вашу email адресу.");
-        return;
-    }
-
-    state.started = true;
-    startTimer();
-    render();
-}
-
-// ---- РЕНДЕР ----
-function render(){
-    const app = document.getElementById("app");
-
-    if (!state.started){
-        app.innerHTML = "";
-        return;
-    }
-
-    if (state.finished){
-        showResults();
-        return;
-    }
-
-    const q = questions[state.index];
-    app.innerHTML = `
-        <div class="question-box">
-            <strong>Питання ${state.index+1} із ${questions.length}:</strong><br><br>
-            ${q.text}<br><br>
-
-            <div class="options">
-                ${Object.entries(q.options).map(([k,v]) => `
-                    <label>
-                        <input type="radio" name="q${q.id}" value="${k}" ${state.choices[q.id]===k?'checked':''}>
-                        <strong>${k}.</strong> ${v}
-                    </label>
-                `).join("")}
-            </div>
-
-            <div class="controls">
-                <button class="secondary" onclick="prev()" ${state.index===0?'disabled':''}>Назад</button>
-                <button class="secondary" onclick="next()" ${state.index===questions.length-1?'disabled':''}>Далі</button>
-                <button onclick="finishTest()">Завершити</button>
-            </div>
-        </div>
-    `;
-
-    document.querySelectorAll("input[type=radio]").forEach(el=>{
-        el.addEventListener("change", e=>{
-            state.choices[q.id] = e.target.value;
-        });
+  // attach listeners
+  const radios = questionArea.querySelectorAll('input[type=radio]');
+  radios.forEach(r=>{
+    r.addEventListener('change', (e)=>{
+      state.choices[q.id] = e.target.value;
     });
+  });
+
+  // nav buttons state
+  prevBtn.disabled = (state.index === 0);
+  nextBtn.disabled = (state.index === QUESTIONS.length-1);
 }
 
-// ---- НАВІГАЦІЯ ----
-function next(){
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);});
+}
+
+function gotoNext(){
+  // if answer selected, it's already stored via change handler
+  if(state.index < QUESTIONS.length-1){
     state.index++;
-    render();
+    renderQuestion();
+  }
 }
-function prev(){
+
+function gotoPrev(){
+  if(state.index > 0){
     state.index--;
-    render();
+    renderQuestion();
+  }
 }
 
-// ---- ЗАВЕРШЕННЯ ----
-function finishTest(){
-    state.finished = true;
-    clearInterval(timer);
-    render();
-}
+function finishAndShowResults(){
+  // stop timer
+  if(state.timerId) clearInterval(state.timerId);
+  // make sure current selection stored (handled by change listeners)
+  // compute score
+  let score = 0;
+  for(const q of QUESTIONS){
+    if(state.choices[q.id] && ANSWERS[q.id] && state.choices[q.id] === ANSWERS[q.id]) score++;
+  }
+  const percent = Math.round(score / QUESTIONS.length * 100);
+  const passed = percent >= 50;
+  const statusText = passed ? "ТЕСТ СКЛАДЕНО — ВІТАЄМО!" : "ТЕСТ НЕ СКЛАДЕНО";
 
-function grade(){
-    let score = 0;
-    for (let q of questions){
-        if (state.choices[q.id] === answers[q.id]) score++;
-    }
-    return score;
-}
+  // show result
+  questionArea.style.display = 'none';
+  navControls.style.display = 'none';
+  resultArea.style.display = 'block';
+  resultArea.innerHTML = `
+    <div class="result">
+      <h2 style="margin:0 0 8px">${statusText}</h2>
+      <p style="margin:0 0 6px"><strong>ПІБ:</strong> ${escapeHtml(fullnameInput.value)}</p>
+      <p style="margin:0 0 6px"><strong>Результат:</strong> ${score} з ${QUESTIONS.length} (${percent}%)</p>
+      <p style="margin:0 0 6px"><strong>Надіслано на:</strong> ${escapeHtml(emailInput.value)}</p>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button id="reloadBtn">Пройти знову</button>
+        <button id="copyBtn" class="secondary">Скопіювати результат</button>
+      </div>
+      <div id="sendStatus" style="margin-top:10px;color:${passed?'green':'#b91c1c'}"></div>
+    </div>
+  `;
 
-// ---- ВІДПРАВКА EMAIL ----
-function sendEmail(text){
-    const userEmail = document.getElementById("email").value;
-
-    fetch("https://formsubmit.co/ajax/chorna.galina69@gmail.com", {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({
-            message: text + "\nEmail користувача: " + userEmail
-        })
+  // send email with results
+  const body = `ПІБ: ${fullnameInput.value}\nРезультат: ${score} з ${QUESTIONS.length} (${percent}%)\nСтатус: ${statusText}`;
+  sendResultEmail(emailInput.value, fullnameInput.value, body)
+    .then(()=> {
+      document.getElementById('sendStatus').textContent = "Результат успішно надіслано.";
+    })
+    .catch((err)=> {
+      console.warn("send failed:", err);
+      const st = document.getElementById('sendStatus');
+      st.innerHTML = 'Не вдалось автоматично надіслати результат. Ви можете скопіювати текст вручну або натиснути кнопку "Відкрити пошту".';
+      // show open-mail button
+      const openMailBtn = document.createElement('button');
+      openMailBtn.textContent = 'Відкрити поштовий клієнт';
+      openMailBtn.className = '';
+      openMailBtn.style.marginLeft = '8px';
+      openMailBtn.onclick = () => {
+        const mailto = `mailto:${encodeURIComponent(emailInput.value)}?subject=${encodeURIComponent('Результат тесту')}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailto;
+      };
+      document.getElementById('sendStatus').appendChild(openMailBtn);
     });
+
+  // attach actions
+  document.getElementById('reloadBtn').addEventListener('click', ()=> location.reload());
+  document.getElementById('copyBtn').addEventListener('click', ()=>{
+    navigator.clipboard.writeText(`ПІБ: ${fullnameInput.value}\nРезультат: ${score} з ${QUESTIONS.length} (${percent}%)\nСтатус: ${statusText}`)
+      .then(()=> alert('Результат скопійовано в буфер обміну'))
+      .catch(()=> alert('Не вдалось скопіювати'));
+  });
 }
 
-// ---- РЕЗУЛЬТАТ ----
-function showResults(){
-    const app = document.getElementById("app");
-    const score = grade();
-    const total = questions.length;
-    const percent = Math.round(score/total*100);
-
-    const passed = percent >= 50;
-    const statusText = passed ? "Тест складено ✔" : "Тест НЕ складено ✖";
-
-    const username = document.getElementById("username").value;
-
-    const message =
-        `ПІБ: ${username}\n`+
-        `Результат: ${score} із ${total} (${percent}%)\n`+
-        `Статус: ${statusText}`;
-
-    sendEmail(message);
-
-    app.innerHTML = `
-        <div class="question-box" style="text-align:center;">
-            <h2>${statusText}</h2>
-            <p><strong>${score}</strong> із ${total}</p>
-            <p>${percent}%</p>
-            <button onclick="location.reload()">Пройти ще раз</button>
-        </div>
-    `;
+/* ======== ВІДПРАВКА РЕЗУЛЬТАТІВ (FormSubmit) ======== */
+function sendResultEmail(destEmail, name, text){
+  return new Promise((resolve, reject)=>{
+    if(!destEmail) return reject('no email');
+    const url = 'https://formsubmit.co/ajax/' + encodeURIComponent(destEmail);
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ name: name, message: text })
+    }).then(resp=>{
+      if(resp.ok) resolve();
+      else resp.json().then(j=>reject(j)).catch(()=>reject('send failed'));
+    }).catch(err=>{
+      reject(err);
+    });
+  });
 }
+
+/* ======== ОБРОБНИКИ ПОДІЙ ======== */
+startBtn.addEventListener('click', startTest);
+nextBtn.addEventListener('click', gotoNext);
+prevBtn.addEventListener('click', gotoPrev);
+finishBtn.addEventListener('click', ()=> {
+  if(!confirm('Ви впевнені, що бажаєте завершити тест?')) return;
+  finishAndShowResults();
+});
+
+/* також обробка клавіш: стрілки */
+document.addEventListener('keydown', (e)=>{
+  if(!state.started) return;
+  if(e.key === 'ArrowRight') gotoNext();
+  if(e.key === 'ArrowLeft') gotoPrev();
+  if(e.key === 'Escape') {
+    if(confirm('Завершити тест?')) finishAndShowResults();
+  }
+});
+
+/* ======== Доп. маленькі захисні речі ======== */
+// Якщо користувач закрив сторінку і повернувся — не дозволяємо залишити активний таймер працювати в background випадково.
+// (не зберігаємо проміжні відповіді щоб простіше; можна додати localStorage за потреби)
+
 </script>
-
 </body>
 </html>
