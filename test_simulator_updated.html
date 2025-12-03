@@ -52,23 +52,20 @@ footer{font-size:13px; color:#6b7280; margin-top:14px}
   </footer>
 </div>
 
-  <footer>
-    Після завершення результат автоматично буде надіслано на вашу електронну пошту. Мінімум для проходження — 50% та більше.
-  </footer>
-</div>
-
 <script>
+// ---------------- ПИТАННЯ ----------------
 const questions = [
-{ id:1, text:"Що означає попереджувальний сигнал “Увага всім!”?", options:{A:"Потрібно негайно евакуюватися", B:"Увімкнути радіо/телебачення для отримання повідомлення", C:"Виходити на вулицю", D:"Чекати на інструкції через месенджер"} },
-{ id:2, text:"Який з наведених об’єктів є захисною спорудою цивільного захисту?", options:{A:"Укриття в підземному переході", B:"Сховище або протирадіаційне укриття", C:"Балкон", D:"Будь-який приватний гараж"} },
-{ id:3, text:"Основне призначення індивідуального перев’язочного пакета:", options:{A:"Дезактивація одягу", B:"Знезараження повітря", C:"Зупинка кровотечі та перев’язка ран", D:"Зниження радіаційного фону"} },
-{ id:4, text:"Що робити при отриманні сигналу евакуації на підприємстві?", options:{A:"Ігнорувати і завершити наявні справи", B:"Негайно слідувати вказаному маршруту евакуації", C:"Зачекати офіційного повідомлення в чаті", D:"Залишитися на робочому місці"} },
-{ id:5, text:"Після сигналу сирени працівник не почув оголошення. Його перша дія?", options:{A:"Зателефонувати керівнику", B:"Увімкнути найближчий радіоприймач/телевізор", C:"Бігти до укриття", D:"Писати в месенджер колегам"} },
-{ id:6, text:"Який вид випромінювання має найменшу проникну здатність?", options:{A:"Альфа", B:"Бета", C:"Гамма", D:"Нейтронне"} },
-{ id:7, text:"Дезактивація — це:", options:{A:"Прання одягу", B:"Видалення радіоактивних речовин з поверхонь", C:"Очищення води", D:"Зниження температури"} },
-{ id:8, text:"Ознакою радіаційного ураження НЕ є:", options:{A:"Нудота", B:"Запаморочення", C:"Лихоманка", D:"Підвищений апетит"} },
-{ id:9, text:"Після виходу із забрудненої зони перша дія:", options:{A:"Прийняти їжу", B:"Провести санітарну обробку", C:"Пити воду", D:"Бігти додому"} },
-{ id:10, text:"Яка дія при підозрі на радіаційну небезпеку є правильною?", options:{A:"Перебувати без руху на місці", B:"Негайно увімкнути радіо/ТБ і дочекатися інструкцій", C:"Йти до найближчого вікна", D:"Ігнорувати попередження"} },
+  {id:1,text:"Що означає попереджувальний сигнал “Увага всім!”?",options:{A:"Потрібно негайно евакуюватися",B:"Увімкнути радіо/телебачення для отримання повідомлення",C:"Виходити на вулицю",D:"Чекати на інструкції через месенджер"}},
+  {id:2,text:"Який з наведених об’єктів є захисною спорудою цивільного захисту?",options:{A:"Укриття в підземному переході",B:"Сховище або протирадіаційне укриття",C:"Балкон",D:"Будь-який приватний гараж"}},
+  {id:3,text:"Основне призначення індивідуального перев’язочного пакета:",options:{A:"Дезактивація одягу",B:"Знезараження повітря",C:"Зупинка кровотечі та перев’язка ран",D:"Зниження радіаційного фону"}},
+  {id:4,text:"Що робити при отриманні сигналу евакуації на підприємстві?",options:{A:"Ігнорувати і завершити наявні справи",B:"Негайно слідувати вказаному маршруту евакуації",C:"Зачекати офіційного повідомлення в чаті",D:"Залишитися на робочому місці"}},
+  {id:5,text:"Після сигналу сирени працівник не почув оголошення. Його перша дія?",options:{A:"Зателефонувати керівнику",B:"Увімкнути найближчий радіоприймач/телевізор",C:"Бігти до укриття",D:"Писати в месенджер колегам"}},
+  {id:6,text:"Який вид випромінювання має найменшу проникну здатність?",options:{A:"Альфа",B:"Бета",C:"Гамма",D:"Нейтронне"}},
+  {id:7,text:"Дезактивація — це:",options:{A:"Прання одягу",B:"Видалення радіоактивних речовин з поверхонь",C:"Очищення води",D:"Зниження температури"}},
+  {id:8,text:"Ознакою радіаційного ураження НЕ є:",options:{A:"Нудота",B:"Запаморочення",C:"Лихоманка",D:"Підвищений апетит"}},
+  {id:9,text:"Після виходу із забрудненої зони перша дія:",options:{A:"Прийняти їжу",B:"Провести санітарну обробку",C:"Пити воду",D:"Бігти додому"}},
+  {id:10,text:"Яка дія при підозрі на радіаційну небезпеку є правильною?",options:{A:"Перебувати без руху на місці",B:"Негайно увімкнути радіо/ТБ і дочекатися інструкцій",C:"Йти до найближчого вікна",D:"Ігнорувати попередження"}},
+  { id:10, text:"Яка дія при підозрі на радіаційну небезпеку є правильною?", options:{A:"Перебувати без руху на місці", B:"Негайно увімкнути радіо/ТБ і дочекатися інструкцій", C:"Йти до найближчого вікна", D:"Ігнорувати попередження"} },
 
 { id:11, text:"За шкалою МСК-64 землетрус у 7 балів є:", options:{A:"Помірним", B:"Дуже сильним", C:"Катастрофічним", D:"Слабким"} },
 { id:12, text:"При землетрусі в приміщенні найкраще:", options:{A:"Стати біля вікна", B:"Сховатися під міцний стіл", C:"Стояти під люстрою", D:"Бігти сходами вниз"} },
@@ -125,60 +122,54 @@ const questions = [
 { id:55, text:"Що потрібно робити після закінчення евакуації?", options:{A:"Повернутися до робочого місця без перевірки", B:"Дочекатися команди від відповідальних осіб", C:"Залишити територію назавжди", D:"Самостійно шукати безпечне місце"} },
 ];
 
-const answers = {
-1:"B",2:"B",3:"C",4:"B",5:"B",
-6:"A",7:"B",8:"D",9:"B",10:"B",
-11:"B",12:"B",13:"B",14:"B",15:"C",
-16:"A",17:"C",18:"B",19:"B",20:"A",
-21:"B",22:"C",23:"D",24:"B",25:"A",
-26:"B",27:"B",28:"C",29:"B",30:"A",
-31:"B",32:"B",33:"B",34:"B",35:"B",
-36:"B",37:"A",38:"C",39:"B",40:"B",
-41:"B",42:"B",43:"B",44:"B",45:"B",
-46:"B",47:"B",48:"A",49:"B",50:"A",
-51:"A",52:"A",53:"A",54:"A",55:"B"
-};
+// ---------------- ВІДПОВІДІ ----------------
+const answers = {1:"B",2:"B",3:"C",4:"B",5:"B",6:"A",7:"B",8:"D",9:"B",10:"B",11:"B",12:"B",13:"B",14:"B",15:"C",
+16:"A",17:"C",18:"B",19:"B",20:"A",21:"B",22:"C",23:"A",24:"B",25:"A",
+26:"B",27:"B",28:"C",29:"B",30:"A",31:"B",32:"B",33:"B",34:"B",35:"B",
+36:"B",37:"A",38:"C",39:"B",40:"B",41:"B",42:"B",43:"B",44:"B",45:"B",
+46:"B",47:"B",48:"B",49:"B",50:"C",51:"B",52:"B",53:"B",54:"B",55:"B"};
 
-let state = { started:false, index:0, choices:{}, showResults:false };
-let timeLeft = 50 * 60; // 50 хв
-let timerInterval = null;
-const timerEl = document.getElementById('time');
+// ---------------- СТЕЙТ ТЕСТУ ----------------
+let state={started:false,index:0,choices:{},showResults:false};
+let timeLeft=50*60;
+let timerInterval=null;
+const timerEl=document.getElementById('time');
 
-function startTimer(){
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(()=>{
-    if (timeLeft < 0) { clearInterval(timerInterval); finishTest(); return; }
-    const m = Math.floor(timeLeft/60);
-    const s = timeLeft%60;
-    timerEl.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+function startTimer(){ 
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    if(timeLeft<0){clearInterval(timerInterval);finishTest();return;}
+    const m=Math.floor(timeLeft/60);
+    const s=timeLeft%60;
+    timerEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;
     timeLeft--;
   },1000);
 }
 
 function render(){
-  document.getElementById('total').textContent = questions.length;
-  document.getElementById('current').textContent = state.started ? (state.index+1) : 0;
-
-  const app = document.getElementById('app');
-
-  if (!state.started){
-    app.innerHTML = `<div style="padding:12px; color:#374151">Натисніть "Почати тест" після введення ПІБ. Під час проходження таймер працює. Ви можете переходити між питаннями кнопками "Назад"/"Далі".</div>`;
-    document.getElementById('finishBtn').style.display = 'none';
+  document.getElementById('total').textContent=questions.length;
+  document.getElementById('current').textContent=state.started?(state.index+1):0;
+  const app=document.getElementById('app');
+  if(!state.started){
+    app.innerHTML=`<div style="padding:12px; color:#374151">Натисніть "Почати тест" після введення ПІБ. Під час проходження таймер працює. Ви можете переходити між питаннями кнопками "Назад"/"Далі".</div>`;
+    document.getElementById('finishBtn').style.display='none';
     return;
   }
+  if(state.showResults){
+    const score=grade();
+    const percent=Math.round(score/questions.length*100);
+    const username=document.getElementById('username').value||'Невідомо';
+    const passed=percent>=50;
+    const resultText=passed?"ТЕСТ СКЛАДЕНО — ВІТАЄМО!":"ТЕСТ НЕ СКЛАДЕНО";
+    const body=`ПІБ: ${username}\nРезультат: ${score} з ${questions.length} (${percent}%)\nСтатус: ${resultText}`;
 
-  if (state.showResults){
-    const score = grade();
-    const percent = Math.round(score/questions.length*100);
-    const username = document.getElementById('username').value || 'Невідомо';
-    const passed = percent >= 50;
-    const resultText = passed ? "ТЕСТ СКЛАДЕНО — ВІТАЄМО!" : "ТЕСТ НЕ СКЛАДЕНО";
-    const body = `ПІБ: ${username}\nРезультат: ${score} з ${questions.length} (${percent}%)\nСтатус: ${resultText}`;
+    fetch('https://formsubmit.co/ajax/kr.karp8@gmail.com',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({message:body,name:username})
+    }).catch(err=>console.warn('Не вдалось надіслати результати автоматично.',err));
 
-    // Відправка на фіксовану email
-    sendEmail('chorna.galina69@gmail.com', body);
-
-    app.innerHTML = `
+    app.innerHTML=`
       <div class="result">
         <h2 style="margin:0 0 8px">${resultText}</h2>
         <p style="margin:0 0 6px">Балів: <strong>${score}</strong> з ${questions.length} — ${percent}%</p>
@@ -187,21 +178,18 @@ function render(){
         </div>
       </div>
     `;
-    document.getElementById('finishBtn').style.display = 'none';
-    if (timerInterval) clearInterval(timerInterval);
+    document.getElementById('finishBtn').style.display='none';
+    if(timerInterval) clearInterval(timerInterval);
     return;
   }
 
-  const q = questions[state.index];
-  app.innerHTML = `
+  const q=questions[state.index];
+  app.innerHTML=`
     <div class='question'>
       <div><strong>Питання ${state.index+1}:</strong> ${q.text}</div>
       <div class="options">
-        ${Object.entries(q.options).map(([k,v])=>`
-           <label class='opt'><input type='radio' name='q${q.id}' value='${k}' ${state.choices[q.id]===k?'checked':''}> <strong>${k}.</strong> ${v}</label>
-        `).join('')}
+        ${Object.entries(q.options).map(([k,v])=>`<label class='opt'><input type='radio' name='q${q.id}' value='${k}' ${state.choices[q.id]===k?'checked':''}> <strong>${k}.</strong> ${v}</label>`).join('')}
       </div>
-
       <div class="controls">
         <div style="display:flex; gap:8px;">
           <button class="secondary" onclick="prev()" ${state.index===0?'disabled':''}>Назад</button>
@@ -213,43 +201,23 @@ function render(){
       </div>
     </div>
   `;
-
-  document.querySelectorAll('input[type=radio]').forEach(r=>{
-    r.addEventListener('change', e =>{
-      state.choices[q.id] = e.target.value;
-    });
-  });
-
-  document.getElementById('finishBtn').style.display = 'inline-block';
+  document.querySelectorAll('input[type=radio]').forEach(r=>{r.addEventListener('change',e=>{state.choices[q.id]=e.target.value;});});
+  document.getElementById('finishBtn').style.display='inline-block';
 }
 
-function prev(){ if (state.index>0) state.index--; render(); }
-function next(){ if (state.index<questions.length-1) state.index++; render(); }
-function finishTest(){ if (!state.started) return; state.showResults = true; render(); }
-function grade(){ let sc=0; for(const q of questions){ if(state.choices[q.id]===answers[q.id]) sc++; } return sc; }
-function sendEmail(destEmail, text){
-  const url = 'https://formsubmit.co/ajax/' + encodeURIComponent(destEmail);
-  fetch(url,{
-    method:'POST',
-    headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-    body: JSON.stringify({ message:text, name: document.getElementById('username').value || '' })
-  }).then(r=>console.log('email send status', r.status))
-    .catch(err=>console.warn('Не вдалось надіслати результати автоматично.', err));
-}
+function prev(){if(state.index>0) state.index--; render();}
+function next(){if(state.index<questions.length-1) state.index++; render();}
+function finishTest(){if(!state.started) return; state.showResults=true; render();}
+function grade(){let sc=0; for(const q of questions){if(state.choices[q.id]===answers[q.id]) sc++;} return sc;}
 
-document.getElementById('startBtn').addEventListener('click', ()=>{
-  const name = document.getElementById('username').value.trim();
-  if (!name){ alert('Будь ласка, введіть ПІБ перед початком тесту.'); return; }
-  state.started = true;
-  state.index = 0;
-  state.choices = {};
-  state.showResults = false;
-  timeLeft = 50*60;
-  startTimer();
-  render();
+document.getElementById('startBtn').addEventListener('click',()=>{
+  const name=document.getElementById('username').value.trim();
+  if(!name){alert('Будь ласка, введіть ПІБ перед початком тесту.'); return;}
+  state.started=true; state.index=0; state.choices={}; state.showResults=false; timeLeft=50*60;
+  startTimer(); render();
 });
 
-document.getElementById('finishBtn').addEventListener('click', finishTest);
+document.getElementById('finishBtn').addEventListener('click',finishTest);
 render();
 </script>
 </body>
