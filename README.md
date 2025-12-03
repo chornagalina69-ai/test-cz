@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Тест — Симулятор (55 питань)</title>
+<title>Тест з Цивільного захисту 2025 рік</title>
 <style>
   body{font-family:system-ui,Arial; background:#f3f4f6; margin:0; padding:24px}
   .container{max-width:1000px; margin:0 auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.08)}
