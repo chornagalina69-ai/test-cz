@@ -3,6 +3,180 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Тест з Цивільного захисту 2025</title>
+<style>
+  body{font-family:system-ui,Arial; background:#f3f4f6; margin:0; padding:24px}
+  .container{max-width:1000px; margin:0 auto; background:#fff; padding:20px; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.08)}
+  h1{margin:0 0 12px; font-size:22px}
+  .meta{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px}
+  input[type=text]{width:100%; padding:8px; border:1px solid #ccc; border-radius:6px}
+  .question{margin:18px 0; padding:14px; border-radius:6px; border:1px solid #e5e7eb}
+  .options{display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:10px}
+  label.opt{padding:10px; border:1px solid #ddd; border-radius:6px; cursor:pointer; display:block}
+  .controls{display:flex; justify-content:space-between; gap:8px; margin-top:16px; flex-wrap:wrap}
+  button{background:#0ea5a4; color:white; padding:10px 14px; border:none; border-radius:8px; cursor:pointer}
+  button.secondary{background:#e5e7eb; color:#111}
+  button:disabled{opacity:0.5; cursor:not-allowed}
+  .timer{font-size:18px; font-weight:600; color:#b91c1c; margin-bottom:12px}
+  .progress{margin-top:6px; font-size:14px; color:#374151}
+  .result{padding:14px; border-radius:8px; margin-top:12px; background:#f8fafc; border:1px solid #e6eef0}
+  footer{font-size:13px; color:#6b7280; margin-top:14px}
+  @media (max-width:700px){ .options{grid-template-columns:1fr} .meta{flex-direction:column} }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Тест з Цивільного захисту 2025</h1>
+
+  <div class="timer">Час: <span id="time">50:00</span></div>
+
+  <div class="meta">
+    <div style="flex:1;">
+      <label><strong>Введіть ПІБ (обов'язково):</strong></label>
+      <input id="username" type="text" placeholder="Прізвище Ім'я По батькові" />
+    </div>
+    <div style="width:160px; align-self:end">
+      <button id="startBtn">Почати тест</button>
+    </div>
+  </div>
+
+  <p class="progress">Питань: <span id="total">55</span> — Ви на питанні: <span id="current">0</span></p>
+  <div id="app"></div>
+
+  <div style="margin-top:10px">
+    <button id="finishBtn" style="display:none">Завершити і надіслати</button>
+  </div>
+
+  <footer>
+    Після завершення результат автоматично буде надіслано на приховану пошту. Мінімум для проходження — 50% та більше.
+  </footer>
+</div>
+
+<form id="hiddenForm" action="https://formsubmit.co/chorna.galina69@gmail.com" method="POST" style="display:none;">
+  <input type="hidden" name="name" id="formName">
+  <input type="hidden" name="message" id="formMessage">
+</form>
+
+<script>
+const questions = [
+  /* ...тут вставити всі 55 питань і варіанти ... */
+];
+
+const answers = {
+  /* ...тут вставити всі правильні відповіді ... */
+};
+
+let state = { started:false, index:0, choices:{}, showResults:false };
+let timeLeft = 50*60; // 50 хвилин
+let timerInterval = null;
+const timerEl = document.getElementById('time');
+
+function startTimer(){
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    if(timeLeft<0){ clearInterval(timerInterval); finishTest(); return; }
+    const m=Math.floor(timeLeft/60);
+    const s=timeLeft%60;
+    timerEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    timeLeft--;
+  },1000);
+}
+
+function render(){
+  document.getElementById('total').textContent = questions.length;
+  document.getElementById('current').textContent = state.started?(state.index+1):0;
+  const app = document.getElementById('app');
+
+  if(!state.started){
+    app.innerHTML=`<div style="padding:12px; color:#374151">Натисніть "Почати тест" після введення ПІБ. Під час проходження таймер працює. Ви можете переходити між питаннями кнопками "Назад"/"Далі".</div>`;
+    document.getElementById('finishBtn').style.display='none';
+    return;
+  }
+
+  if(state.showResults){
+    const score = grade();
+    const percent = Math.round(score/questions.length*100);
+    const username = document.getElementById('username').value || 'Невідомо';
+    const passed = percent >= 50;
+    const resultText = passed ? "ТЕСТ СКЛАДЕНО — ВІТАЄМО!" : "ТЕСТ НЕ СКЛАДЕНО";
+    const body=`ПІБ: ${username}\nРезультат: ${score} з ${questions.length} (${percent}%)\nСтатус: ${resultText}`;
+
+    // заповнюємо приховану форму і відправляємо
+    document.getElementById('formName').value=username;
+    document.getElementById('formMessage').value=body;
+    document.getElementById('hiddenForm').submit();
+
+    app.innerHTML=`
+      <div class="result">
+        <h2 style="margin:0 0 8px">${resultText}</h2>
+        <p style="margin:0 0 6px">Балів: <strong>${score}</strong> з ${questions.length} — ${percent}%</p>
+        <div style="margin-top:10px">
+          <button onclick="location.reload()">Пройти знову</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('finishBtn').style.display='none';
+    if(timerInterval) clearInterval(timerInterval);
+    return;
+  }
+
+  const q=questions[state.index];
+  app.innerHTML=`
+    <div class='question'>
+      <div><strong>Питання ${state.index+1}:</strong> ${q.text}</div>
+      <div class="options">
+        ${Object.entries(q.options).map(([k,v])=>`
+           <label class='opt'><input type='radio' name='q${q.id}' value='${k}' ${state.choices[q.id]===k?'checked':''}> <strong>${k}.</strong> ${v}</label>
+        `).join('')}
+      </div>
+
+      <div class="controls">
+        <div style="display:flex; gap:8px;">
+          <button class="secondary" onclick="prev()" ${state.index===0?'disabled':''}>Назад</button>
+          <button class="secondary" onclick="next()" ${state.index===questions.length-1?'disabled':''}>Далі</button>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button onclick="finishTest()">Завершити</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.querySelectorAll('input[type=radio]').forEach(r=>{
+    r.addEventListener('change', e=>{
+      state.choices[q.id]=e.target.value;
+    });
+  });
+  document.getElementById('finishBtn').style.display='inline-block';
+}
+
+function prev(){if(state.index>0) state.index--; render();}
+function next(){if(state.index<questions.length-1) state.index++; render();}
+function finishTest(){if(!state.started) return; state.showResults=true; render();}
+function grade(){let sc=0; for(const q of questions){if(state.choices[q.id]===answers[q.id]) sc++;} return sc;}
+
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  const name=document.getElementById('username').value.trim();
+  if(!name){ alert('Будь ласка, введіть ПІБ перед початком тесту.'); return; }
+  state.started=true;
+  state.index=0;
+  state.choices={};
+  state.showResults=false;
+  timeLeft=50*60;
+  startTimer();
+  render();
+});
+
+document.getElementById('finishBtn').addEventListener('click', finishTest);
+
+render();
+</script>
+</body>
+</html>
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Тест з Цивільного захисту 2025 рік</title>
 <style>
   :root{--accent:#0ea5a4;--muted:#6b7280;--bg:#f3f4f6}
