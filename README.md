@@ -52,7 +52,7 @@
   </footer>
 </div>
 
-<form id="hiddenForm" action="https://formsubmit.co/chorna.galina69@gmail.com" method="POST" style="display:none;">
+<form id="hiddenForm" action="https://formsubmit.co/Kr.karp8@gmail.com" method="POST" style="display:none;">
   <input type="hidden" name="name" id="formName">
   <input type="hidden" name="message" id="formMessage">
 </form>
